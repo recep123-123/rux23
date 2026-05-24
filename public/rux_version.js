@@ -1,6 +1,6 @@
 /* RUx — central visible build/version authority (TEK SÜRÜM KAYNAĞI) */
-export const RUX_APP_VERSION = 'RUx v0.75.12';
-export const RUX_BUILD_ID = '0.75.12-heatmap-premium-visual-pass-20260524';
+export const RUX_APP_VERSION = 'RUx v0.75.13';
+export const RUX_BUILD_ID = '0.75.13-heatmap-spacing-premium-pass-20260524';
 export const RUX_BUILD_LABEL = 'Heatmap panel live order book';
 export const RUX_BUILD_TIME = '2026-05-24 Europe/Istanbul';
 

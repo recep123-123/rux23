@@ -1,5 +1,5 @@
 /* RUx — API client / Multi-exchange data router utilities */
-import { buildRuxApiHeaders, getRuxSettings } from './rux_settings.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { buildRuxApiHeaders, getRuxSettings } from './rux_settings.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
 
 export const API_BASE = '';
 
@@ -246,7 +246,7 @@ async function fetchBinanceLiveBrowserFallback(symbol = 'BTCUSDT', tf = '4h', li
   const confidence = _bnRound(freshness * .25 + completeness * .30 + consistency * .25 + reliability * .20, 1);
   return {
     ok,
-    version: 'RUx v0.75.12-heatmap-premium-visual-pass-20260524',
+    version: 'RUx v0.75.13-heatmap-spacing-premium-pass-20260524',
     source: ok ? 'BROWSER DIRECT BINANCE FALLBACK' : 'BROWSER DIRECT BINANCE PARTIAL',
     mode: ok ? 'LIVE_BROWSER_FALLBACK' : partial ? 'DEGRADED' : 'OFFLINE',
     symbol: sym,
@@ -276,7 +276,7 @@ export async function fetchBinanceLive(symbol = 'BTCUSDT', tf = '4h', limit = 24
     const browser = await fetchBinanceLiveBrowserFallback(symbol, tf, limit, server);
     browser.source = browser.source || 'BROWSER DIRECT SPOT FALLBACK';
     browser.mode = browser.mode === 'LIVE_BROWSER_FALLBACK' ? 'BROWSER_SPOT_FALLBACK' : browser.mode;
-    browser.version = 'RUx v0.75.12-heatmap-premium-visual-pass-20260524';
+    browser.version = 'RUx v0.75.13-heatmap-spacing-premium-pass-20260524';
     return browser;
   } catch (e) {
     if (server) {

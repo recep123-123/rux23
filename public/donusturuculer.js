@@ -1,6 +1,6 @@
 /* RUx — Dönüştürücüler (real working converters) */
-import { State, el, fetchMarket, toast } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { State, el, fetchMarket, toast } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
 
 let liveBtcUsd = 0;
 let liveEthUsd = 0;

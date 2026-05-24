@@ -3451,12 +3451,12 @@ HANDLERS['derivs'] = (() => {
     const interval = tf;
     const okxBar = ({ '5m':'5m', '15m':'15m', '1h':'1H', '4h':'4H', '1d':'1D', '1w':'1W' })[tf] || '15m';
     const profileMap = {
-      '5m':  { label:'5 dk', visibleCandles:72, fetchCandles:180, rangeLookback:48, rangePct:0.018, atrMult:3.2, stepMult:1, nearFocus:320, wallThreshold:0.82, voidThreshold:0.24, momentumLookback:18, retainNearBands:10 },
-      '15m': { label:'15 dk', visibleCandles:72, fetchCandles:180, rangeLookback:60, rangePct:0.028, atrMult:3.8, stepMult:1, nearFocus:240, wallThreshold:0.78, voidThreshold:0.22, momentumLookback:18, retainNearBands:11 },
-      '1h':  { label:'1 saat', visibleCandles:84, fetchCandles:200, rangeLookback:72, rangePct:0.050, atrMult:4.5, stepMult:2, nearFocus:170, wallThreshold:0.74, voidThreshold:0.19, momentumLookback:24, retainNearBands:12 },
-      '4h':  { label:'4 saat', visibleCandles:84, fetchCandles:220, rangeLookback:84, rangePct:0.085, atrMult:5.2, stepMult:4, nearFocus:110, wallThreshold:0.70, voidThreshold:0.17, momentumLookback:28, retainNearBands:13 },
-      '1d':  { label:'1 gün', visibleCandles:76, fetchCandles:160, rangeLookback:64, rangePct:0.140, atrMult:5.8, stepMult:8, nearFocus:68, wallThreshold:0.66, voidThreshold:0.14, momentumLookback:16, retainNearBands:14 },
-      '1w':  { label:'1 hafta', visibleCandles:52, fetchCandles:120, rangeLookback:40, rangePct:0.260, atrMult:6.2, stepMult:16, nearFocus:40, wallThreshold:0.62, voidThreshold:0.12, momentumLookback:8, retainNearBands:16 }
+      '5m':  { label:'5 dk', visibleCandles:96, fetchCandles:240, rangeLookback:54, rangePct:0.012, atrMult:2.8, stepMult:1, nearFocus:340, wallThreshold:0.84, voidThreshold:0.26, momentumLookback:22, retainNearBands:12, heatBands:34 },
+      '15m': { label:'15 dk', visibleCandles:88, fetchCandles:220, rangeLookback:66, rangePct:0.022, atrMult:3.4, stepMult:1, nearFocus:265, wallThreshold:0.80, voidThreshold:0.23, momentumLookback:20, retainNearBands:12, heatBands:30 },
+      '1h':  { label:'1 saat', visibleCandles:72, fetchCandles:210, rangeLookback:78, rangePct:0.045, atrMult:4.3, stepMult:2, nearFocus:175, wallThreshold:0.75, voidThreshold:0.19, momentumLookback:22, retainNearBands:13, heatBands:24 },
+      '4h':  { label:'4 saat', visibleCandles:58, fetchCandles:200, rangeLookback:92, rangePct:0.100, atrMult:5.4, stepMult:5, nearFocus:112, wallThreshold:0.71, voidThreshold:0.16, momentumLookback:26, retainNearBands:14, heatBands:20 },
+      '1d':  { label:'1 gün', visibleCandles:42, fetchCandles:170, rangeLookback:82, rangePct:0.210, atrMult:6.4, stepMult:10, nearFocus:70, wallThreshold:0.67, voidThreshold:0.13, momentumLookback:18, retainNearBands:16, heatBands:16 },
+      '1w':  { label:'1 hafta', visibleCandles:26, fetchCandles:130, rangeLookback:52, rangePct:0.380, atrMult:7.6, stepMult:22, nearFocus:42, wallThreshold:0.62, voidThreshold:0.10, momentumLookback:10, retainNearBands:18, heatBands:12 }
     };
     const profile = profileMap[tf] || profileMap['15m'];
     const okxId = okxInst(symbol);
@@ -3537,6 +3537,8 @@ HANDLERS['derivs'] = (() => {
     out.candles = rawCandles.slice(-Math.max(profile.visibleCandles, 72));
     out.chartWindow = profile.visibleCandles;
     out.windowLabel = profile.label;
+    out.timeframe = tf;
+    out.heatBands = profile.heatBands;
 
     if (!price || (!allBids.length && !allAsks.length)) {
       out.source = 'none';
@@ -3636,6 +3638,7 @@ HANDLERS['derivs'] = (() => {
     out.currentPrice = price;
     out.priceChg24hPct = priceChg24hPct;
     out.priceRange = { low, high, step };
+    out.visualProfile = { tf, visibleCandles: profile.visibleCandles, heatBands: profile.heatBands, rangePct: profile.rangePct };
     out.levels = levels;
     out.walls = walls.map(x => ({ price:x.price, range:x.range, side:x.side, liquidityUsd:x.totalUsd, density:x.density, mainVenue:x.mainVenue }));
     out.voids = voids.map(x => ({ price:x.price, range:x.range, side:x.side, liquidityUsd:x.totalUsd, density:x.density, mainVenue:x.mainVenue }));

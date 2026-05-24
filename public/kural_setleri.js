@@ -1,6 +1,6 @@
 /* RUx — Kural Setleri / Forward Durumu */
-import { el } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
-import { ICN, statCard, card, pageHead, checklist, tag } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { el } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { ICN, statCard, card, pageHead, checklist, tag } from './components.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
 import {
   buildRuleBuilderReport,
   addRuleSet,
@@ -8,8 +8,8 @@ import {
   updateRuleSet,
   deleteRuleSet,
   exportRuleSetsBlob
-} from './rux_rulebuilder.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
-import { loadSignalJournal, parseJournalR } from './rux_journal.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+} from './rux_rulebuilder.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { loadSignalJournal, parseJournalR } from './rux_journal.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
 
 function fmt(n, d=0) {
   const x = Number(n);

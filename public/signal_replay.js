@@ -1,9 +1,9 @@
 /* RUx — Signal Replay & Trade Timeline Viewer UI */
-import { el, State, fetchMarket } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
-import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
-import { canvasLineChart } from './charts.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
-import { loadSignalJournal } from './rux_journal.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
-import { makeSignalReplayReport } from './rux_signal_replay.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { canvasLineChart } from './charts.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { loadSignalJournal } from './rux_journal.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { makeSignalReplayReport } from './rux_signal_replay.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
 
 function fmtR(n, d = 2) {
   const v = Number(n || 0);
