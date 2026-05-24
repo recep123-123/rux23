@@ -1,9 +1,9 @@
 /* RUx — Sistem / API Sağlığı + Order Flow Şeffaflığı */
-import { fetchIntel, el, testApiEndpoint, RUX_HEALTH_ENDPOINTS, getRuxSourceLog, clearRuxSourceLog } from './api.js?v=0.75.5-liquidation-panel-live-20260524';
-import { getRuxSettings, maskSecret, settingsCompletionScore, getOrderflowScoreMode, orderflowScoreModeLabel } from './rux_settings.js?v=0.75.5-liquidation-panel-live-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.5-liquidation-panel-live-20260524';
-import { makeRuxSystemSnapshot, makeRuxDecisionSnapshot, statusClass, makeRuxDataConfidenceReport } from './rux_core.js?v=0.75.5-liquidation-panel-live-20260524';
-import { loadRecentErrors, loadAudit, storageStats, isPersistenceAvailable } from './rux_storage.js?v=0.75.5-liquidation-panel-live-20260524';
+import { fetchIntel, el, testApiEndpoint, RUX_HEALTH_ENDPOINTS, getRuxSourceLog, clearRuxSourceLog } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { getRuxSettings, maskSecret, settingsCompletionScore, getOrderflowScoreMode, orderflowScoreModeLabel } from './rux_settings.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { makeRuxSystemSnapshot, makeRuxDecisionSnapshot, statusClass, makeRuxDataConfidenceReport } from './rux_core.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { loadRecentErrors, loadAudit, storageStats, isPersistenceAvailable } from './rux_storage.js?v=0.75.6-liquidation-compact-trusted-20260524';
 
 export async function renderSistem(host) {
   host.innerHTML = '';
@@ -184,7 +184,7 @@ export async function renderSistem(host) {
     ['14:18','INFO','Funding cache yenilendi','green'],
     ['12:42','UYARI','News Pulse: 1 saniye gecikme','yellow'],
     ['11:12','INFO','Hyperliquid bağlantısı yeniden kuruldu','green'],
-    ['08:18','INFO','Sistem güncellemesi başarılı (RUx v0.75.5-liquidation-panel-live-20260524','green'],
+    ['08:18','INFO','Sistem güncellemesi başarılı (RUx v0.75.6-liquidation-compact-trusted-20260524','green'],
     ['06:42','INFO','Otomatik yedekleme tamamlandı','green'],
   ].forEach(r => ev.appendChild(el('div', { style: 'display:grid; grid-template-columns: 50px 60px 1fr; gap:8px; padding:6px 0; border-bottom:1px dashed var(--bd-1); font-size:11.5px' },
     el('span', { class: 'mono small muted' }, r[0]),

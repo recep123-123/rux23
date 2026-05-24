@@ -1,6 +1,6 @@
 /* RUx — User Execution Fidelity Engine
    Signal Performance ile User Execution Performance ayrımı. */
-import { loadSignalJournal, parseJournalR } from './rux_journal.js?v=0.75.5-liquidation-panel-live-20260524';
+import { loadSignalJournal, parseJournalR } from './rux_journal.js?v=0.75.6-liquidation-compact-trusted-20260524';
 
 export const USER_EXECUTION_KEY = 'rux.userExecutions.v1';
 

@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.5-liquidation-panel-live-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.5-liquidation-panel-live-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];
@@ -2012,6 +2012,12 @@ export async function renderDerivsCVD(host) {
 }
 
 // ───────── 4) LIKIDASYON ─────────
+
+function liqWindowMs(raw) {
+  const map = { '5m': 5*60_000, '15m': 15*60_000, '1h': 60*60_000, '4h': 4*60*60_000, '1d': 24*60*60_000, '1w': 7*24*60*60_000 };
+  return map[normalizePeriod(raw)] || map['15m'];
+}
+
 export async function renderDerivsLiq(host) {
   host.innerHTML = '';
   suppressOiOverhead(host);
@@ -2088,7 +2094,11 @@ export async function renderDerivsLiq(host) {
 
   try {
     const [d, market] = await Promise.all([fetchDerivs('liquidations', currentSymbol(), backendPeriod(getPeriod())), fetchMarket(currentSymbol(), backendPeriod(getPeriod()), 180)]);
-    const rawEvents = (d?.recent || []).filter(x=>Number.isFinite(num(x.usd)) && num(x.usd)>0);
+    const allRawEvents = (d?.recent || []).filter(x=>Number.isFinite(num(x.usd)) && num(x.usd)>0);
+    const nowTs = Date.now();
+    const winMs = liqWindowMs(getPeriod());
+    let rawEvents = allRawEvents.filter(x => Math.abs(nowTs - num(x.time, nowTs)) <= winMs);
+    if (!rawEvents.length && allRawEvents.length) rawEvents = allRawEvents.slice(0, Math.min(80, allRawEvents.length));
     root.innerHTML = '';
     if ((!d?.ok && !rawEvents.length) || !rawEvents.length) { root.appendChild(el('div',{class:'liq-error-card'},'Likidasyon verisi alınamadı. '+(d?.errors||[]).join(' · '))); return; }
     const events = rawEvents.map(x=>({ ...x, exchange:x.exchange||d.source||'Bybit', liquidatedSide:x.liquidatedSide || (x.side==='Sell'?'Long':'Short'), time:num(x.time,Date.now()), usd:num(x.usd), price:num(x.price), size:num(x.size) })).sort((a,b)=>b.time-a.time);
@@ -2104,10 +2114,10 @@ export async function renderDerivsLiq(host) {
     const regime = squeezeScore>=65?'Short Squeeze':squeezeScore<=35?'Long Flush':'Dengeli Tasfiye'; const regimeTone=squeezeScore>=65?'neg':squeezeScore<=35?'pos':'warn';
 
     const kpi=(label,value,sub,tone='pos',sparkVals=[])=>el('div',{class:'liq-kpi '+tone},el('div',{class:'liq-kpi-label'},label),el('div',{class:'liq-kpi-value'},value),el('div',{class:'liq-kpi-sub'},sub||''),sparkSvg(sparkVals,tone==='neg'?'#ff4f7b':tone==='warn'?'#ffb000':'#10e8a3'));
-    root.appendChild(el('div',{class:'liq-topbar'},el('div',{class:'liq-titlebar'},el('div',{class:'liq-logo'},'LX'),el('div',{},el('div',{class:'liq-title'},'Likidasyon Paneli'),el('div',{class:'liq-subtitle'},'Gerçekleşen tasfiyeler, squeeze baskısı ve borsa bazlı dağılım'))),el('div',{class:'liq-status-row'},['Veri Kaynağı: Gerçek Zamanlı','Sembol: '+currentSymbol()+' Perp','Zaman Dilimi: '+periodLabel(getPeriod()),'Likidasyon Rejimi: '+regime,'Uyarı Durumu: '+(Math.abs(netScore)>.25?2:1)+' Uyarı'].map(t=>el('div',{class:'liq-status-chip'},el('span',{},t.split(':')[0]),el('b',{},t.split(':').slice(1).join(':').trim())))),el('div',{class:'liq-top-icons'},'🔔 ⚙ ⤢')));
+    root.appendChild(el('div',{class:'liq-topbar liq-topbar-compact'},el('div',{class:'liq-titlebar'},el('div',{class:'liq-logo'},'LX'),el('div',{},el('div',{class:'liq-title'},'Likidasyon Paneli'),el('div',{class:'liq-subtitle'},'Gerçekleşen tasfiyeler, squeeze baskısı ve borsa bazlı dağılım')))));
     root.appendChild(el('div',{class:'liq-kpi-row'},kpi('TOPLAM LİKİDASYON',fmtUsd(totalUsd,2),'+ canlı pencere','pos',events.slice(0,25).reverse().map(e=>e.usd)),kpi('LONG TASFİYE',fmtUsd(longUsd,2),pct(totalUsd?longUsd/totalUsd*100:0),'pos',events.filter(e=>e.liquidatedSide==='Long').slice(0,25).reverse().map(e=>e.usd)),kpi('SHORT TASFİYE',fmtUsd(shortUsd,2),pct(totalUsd?shortUsd/totalUsd*100:0),'neg',events.filter(e=>e.liquidatedSide==='Short').slice(0,25).reverse().map(e=>e.usd)),kpi('NET SQUEEZE SKORU',(netScore>=0?'+':'')+netScore.toFixed(2),netScore>=0?'Short baskın':'Long baskın',netScore>=0?'pos':'neg',closes.slice(-25)),kpi('EN BÜYÜK OLAY',fmtUsd(biggest?.usd||0,2),(biggest?.exchange||'—')+' · '+new Date(biggest?.time||Date.now()).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'warn',events.slice(0,25).map(e=>e.usd)),kpi('BASKIN REJİM',regime,Math.abs(netScore)>.35?'Aşırı Risk':'Kontrollü',regimeTone,closes.slice(-25))));
 
-    const comments=[`${biggest?.exchange||'Borsa'} tarafında ${fmtUsd(biggest?.usd,2)} büyüklüğünde tasfiye olayı öne çıkıyor.`, `Net squeeze skoru ${(netScore>=0?'+':'')+netScore.toFixed(2)}; ${netScore>=0?'short squeeze riski':'long flush baskısı'} izleniyor.`, `${exItems.length} canlı borsa/kaynak üzerinden dağılım derlendi.`, `Likidasyon akışı ${regime.toLowerCase()} rejimini destekliyor.`];
+    const comments=[`${biggest?.exchange||'Borsa'} tarafında ${fmtUsd(biggest?.usd,2)} büyüklüğünde tasfiye olayı öne çıkıyor.`, `Net squeeze skoru ${(netScore>=0?'+':'')+netScore.toFixed(2)}; ${netScore>=0?'short squeeze riski':'long flush baskısı'} izleniyor.`, `${exItems.length} doğrulanmış canlı kaynak üzerinden dağılım derlendi.`, `Likidasyon akışı ${regime.toLowerCase()} rejimini destekliyor.`];
     const tape=events.slice(0,11);
     root.appendChild(el('div',{class:'liq-grid'},
       el('div',{class:'liq-card liq-clusters'},el('div',{class:'liq-card-head'},el('div',{class:'liq-card-title'},'Gerçekleşmiş Likidasyon Kümeleri'),el('span',{},'Fiyat Bantları')),bandChart(clusters,currentPrice)),
@@ -2117,7 +2127,7 @@ export async function renderDerivsLiq(host) {
       el('div',{class:'liq-card liq-risk'},el('div',{class:'liq-card-title'},'Squeeze Risk Göstergesi'),gauge(squeezeScore, squeezeScore>=50?'Short Squeeze Riski':'Long Flush Riski')),
       el('div',{class:'liq-card liq-tape'},el('div',{class:'liq-card-title'},'Canlı Likidasyon Tape'),el('div',{class:'liq-tape-table'},el('div',{class:'liq-tape-head'},'Zaman','Borsa','Taraf','Fiyat','Tutar'),...tape.map(e=>el('div',{class:'liq-tape-row '+(e.liquidatedSide==='Long'?'neg':'pos')},el('span',{},new Date(e.time).toLocaleTimeString('tr-TR')),el('span',{},e.exchange),el('b',{},e.liquidatedSide),el('span',{},fmtPrice(e.price)),el('strong',{},fmtUsd(e.usd,2))))))
     ));
-    const sigs=[['LONG FLUSH',fmtUsd(longUsd,2),'neg'],['SHORT FLUSH',fmtUsd(shortUsd,2),'neg'],['CLUSTER BREAK',fmtPrice(clusters.sort((a,b)=>b.total-a.total)[0]?.price||currentPrice),'warn'],['CROSS-EXCHANGE CASCADE',exItems.length+' kaynak senkronize','purple'],['MOMENTUM REVERSAL',regime,'pos']];
+    const sigs=[['LONG FLUSH',fmtUsd(longUsd,2),'neg'],['SHORT FLUSH',fmtUsd(shortUsd,2),'neg'],['CLUSTER BREAK',fmtPrice(clusters.sort((a,b)=>b.total-a.total)[0]?.price||currentPrice),'warn'],['CROSS-EXCHANGE CASCADE',exItems.length>1?exItems.length+' kaynak senkronize':'Tek kaynak aktif','purple'],['MOMENTUM REVERSAL',regime,'pos']];
     root.appendChild(el('div',{class:'liq-signal-strip'},el('div',{class:'liq-signal-label'},'Aktif Likidasyon Sinyalleri'),el('div',{class:'liq-signal-row'},...sigs.map(s=>el('div',{class:'liq-signal-card '+s[2]},el('div',{class:'liq-signal-icon'},s[2]==='pos'?'↗':s[2]==='warn'?'▥':'〽'),el('div',{},el('b',{},s[0]),el('span',{},s[1]))))),el('button',{class:'liq-all-signals',on:{click:()=>window.OMNI?.navigate?window.OMNI.navigate('sinyal',{kaynak:'liquidations',symbol:currentSymbol(),tf:getPeriod()}):(location.hash='#/sinyal')}},'Sinyal Ayarları')));
   } catch(e) {
     root.innerHTML=''; root.appendChild(el('div',{class:'liq-error-card'},'Hata: '+(e?.message||e)));

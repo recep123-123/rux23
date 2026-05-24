@@ -1,11 +1,11 @@
 /* RUx — Ana Kokpit Live Retrofit */
-import { State, fetchMarket, fetchNews, fmtPrice, fmtPct, fmtNum, el, fmtTime, coinShort, coinName, fmtTimeShort } from './api.js?v=0.75.5-liquidation-panel-live-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, sparkline, barbar, tag, coinPill, pager } from './components.js?v=0.75.5-liquidation-panel-live-20260524';
-import { makeCandleChart, addEmaLine } from './charts.js?v=0.75.5-liquidation-panel-live-20260524';
-import { makeRuxDecisionSnapshot, analyzeLiveMarketSignal, statusClass } from './rux_core.js?v=0.75.5-liquidation-panel-live-20260524';
-import { getDashboardWidgets, removeDashboardWidget, getAlerts, formatLocalTime } from './rux_actions.js?v=0.75.5-liquidation-panel-live-20260524';
-import { buildRuleBuilderReport } from './rux_rulebuilder.js?v=0.75.5-liquidation-panel-live-20260524';
-import { makeForwardJournalReport, formatJournalR } from './rux_journal.js?v=0.75.5-liquidation-panel-live-20260524';
+import { State, fetchMarket, fetchNews, fmtPrice, fmtPct, fmtNum, el, fmtTime, coinShort, coinName, fmtTimeShort } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, sparkline, barbar, tag, coinPill, pager } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { makeCandleChart, addEmaLine } from './charts.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { makeRuxDecisionSnapshot, analyzeLiveMarketSignal, statusClass } from './rux_core.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { getDashboardWidgets, removeDashboardWidget, getAlerts, formatLocalTime } from './rux_actions.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { buildRuleBuilderReport } from './rux_rulebuilder.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { makeForwardJournalReport, formatJournalR } from './rux_journal.js?v=0.75.6-liquidation-compact-trusted-20260524';
 
 export async function renderKokpit(host) {
   host.innerHTML = '';
