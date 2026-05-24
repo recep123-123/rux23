@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "regions": ["fra1"],
+  "rewrites": [
+    { "source": "/api/funding-history", "destination": "/api/rux.js?route=funding-history" },
+    { "source": "/api/feargreed", "destination": "/api/rux.js?route=feargreed" },
+    { "source": "/api/futures", "destination": "/api/rux.js?route=futures" },
+    { "source": "/api/binance-live", "destination": "/api/rux.js?route=binance-live" },
+    { "source": "/api/market-router", "destination": "/api/rux.js?route=market-router" },
+    { "source": "/api/market", "destination": "/api/rux.js?route=market" },
+    { "source": "/api/liquidity", "destination": "/api/rux.js?route=liquidity" },
+    { "source": "/api/attention", "destination": "/api/rux.js?route=attention" },
+    { "source": "/api/intel", "destination": "/api/rux.js?route=intel" },
+    { "source": "/api/news-pulse", "destination": "/api/rux.js?route=news-pulse" },
+    { "source": "/api/news", "destination": "/api/rux.js?route=news" },
+    { "source": "/api/cmc", "destination": "/api/rux.js?route=cmc" },
+    { "source": "/api/tickers", "destination": "/api/rux.js?route=tickers" },
+    { "source": "/api/econ-calendar", "destination": "/api/rux.js?route=econ-calendar" },
+    { "source": "/api/derivs", "destination": "/api/rux.js?route=derivs" },
+    { "source": "/api/cvd", "destination": "/api/rux.js?route=cvd" },
+    { "source": "/api/defillama", "destination": "/api/rux.js?route=defillama" },
+    { "source": "/api/hyperliquid", "destination": "/api/rux.js?route=hyperliquid" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
+    },
+    {
+      "source": "/((?!api/).*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
+    }
+  ],
+  "buildCommand": "echo Static Vercel deployment ready",
+  "installCommand": "echo No install required",
+  "outputDirectory": "public"
+}

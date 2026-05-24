@@ -1,0 +1,18 @@
+{
+  "name": "rux-trade-terminal",
+  "version": "0.75.2",
+  "private": true,
+  "scripts": {
+    "build": "echo Static Vercel deployment ready",
+    "start": "echo Deploy to Vercel or open public/index.html",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "node smoke-test.mjs",
+    "ci": "npm run smoke && npm test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vitest": "^2.1.0"
+  },
+  "description": "RUx Trade Terminal — kripto karar destek terminali. Karar yolunda demo yasağı, ampirik edge kalibrasyonu, profesyonel örneklem eşikleri, canlı veri doğrulama."
+}
