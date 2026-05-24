@@ -1,8 +1,8 @@
 /* RUx — Signal Replay & API Reliability Engine */
-import { RUX_HEALTH_ENDPOINTS, testApiEndpoint, getRuxSourceLog, clearRuxSourceLog } from './api.js?v=0.75.7-liquidation-source-health-20260524';
-import { makeRuxDataConfidenceReport } from './rux_core.js?v=0.75.7-liquidation-source-health-20260524';
+import { RUX_HEALTH_ENDPOINTS, testApiEndpoint, getRuxSourceLog, clearRuxSourceLog } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
+import { makeRuxDataConfidenceReport } from './rux_core.js?v=0.75.8-heatmap-panel-live-20260524';
 
-export const RUX_DATA_HEALTH_VERSION = 'RUx v0.75.7-liquidation-source-health-20260524';
+export const RUX_DATA_HEALTH_VERSION = 'RUx v0.75.8-heatmap-panel-live-20260524';
 
 export const RUX_SIGNAL_DATA_GATES = Object.freeze([
   { min: 85, label: 'NORMAL SIGNAL', action: 'Tam sinyal üretimi açık', multiplier: 1.00, tone: 'green' },

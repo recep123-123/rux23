@@ -1,7 +1,7 @@
 /* RUx — Setup Performans Matrisi Engine
    Setup + rejim bazında backtest/forward edge ayrıştırması. Otomatik emir üretmez. */
-import { clamp, round, summarizeBacktestRows } from './rux_core.js?v=0.75.7-liquidation-source-health-20260524';
-import { loadSignalJournal, parseJournalR } from './rux_journal.js?v=0.75.7-liquidation-source-health-20260524';
+import { clamp, round, summarizeBacktestRows } from './rux_core.js?v=0.75.8-heatmap-panel-live-20260524';
+import { loadSignalJournal, parseJournalR } from './rux_journal.js?v=0.75.8-heatmap-panel-live-20260524';
 
 const MIN_SAMPLE = 12;
 const STRONG_SAMPLE = 30;

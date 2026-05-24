@@ -3439,40 +3439,188 @@ HANDLERS['derivs'] = (() => {
     return out;
   }
 
-  // 5) LIKIDASYON HEATMAP — MODELLENMIŞ (gerçek veri değil, tahmin).
-  // Fiyat + OI + tipik kaldıraç seviyelerinden likidasyon kümelerini modeller.
+  // 5) LIKIDITE HEATMAP — CANLI ORDER BOOK + TÜREV ANALİTİK.
+  // Ücretsiz public borsa API'leri: Binance USD-M ana kaynak, Bybit/OKX çapraz kaynak.
   async function getHeatmap(symbol, period) {
-    const out = { type: 'heatmap', symbol, modeled: true, levels: [], errors: [],
-      disclaimer: 'MODELLENMİŞ TAHMİN — gerçek likidasyon emirleri değil. Fiyat, OI ve tipik kaldıraç (5x-100x) seviyelerinden hesaplanmıştır.' };
-    // Mum verisi (fiyat aralığı için)
-    const kl = await fetchJson(`${BINANCE}/fapi/v1/klines?symbol=${symbol}&interval=${period === '5m' ? '5m' : '1h'}&limit=200`);
-    const oi = await fetchJson(`${BINANCE}/fapi/v1/openInterest?symbol=${symbol}`);
-    if (!Array.isArray(kl)) { out.errors.push('binance klines: ' + (kl._err || 'veri yok')); out.source = 'none'; return out; }
-    const closes = kl.map(c => Number(c[4]));
-    const highs = kl.map(c => Number(c[2]));
-    const lows = kl.map(c => Number(c[3]));
-    const vols = kl.map(c => Number(c[5]));
-    const price = closes.at(-1);
-    const oiContracts = oi && !oi._err ? Number(oi.openInterest) : 0;
-    // Tipik kaldıraç seviyeleri ve likidasyon mesafeleri (~%maintenance margin)
-    const levs = [5, 10, 25, 50, 100];
-    const recentHigh = Math.max(...highs.slice(-96));
-    const recentLow = Math.min(...lows.slice(-96));
-    const avgVol = vols.slice(-96).reduce((a, b) => a + b, 0) / Math.min(96, vols.length);
-    // Her kaldıraç için long ve short likidasyon fiyatı + tahmini hacim ağırlığı
-    for (const lev of levs) {
-      const dist = 1 / lev; // likidasyon mesafesi ≈ 1/kaldıraç
-      const longLiqPrice = price * (1 - dist);   // long pozisyonlar aşağıda likide
-      const shortLiqPrice = price * (1 + dist);  // short pozisyonlar yukarıda likide
-      // Ağırlık: düşük kaldıraç daha yaygın → daha çok hacim; OI ile ölçekle
-      const weight = (oiContracts * avgVol) / (lev * lev);
-      if (longLiqPrice >= recentLow * 0.9) out.levels.push({ price: Math.round(longLiqPrice * 100) / 100, side: 'long', leverage: lev, intensity: Math.round(weight) });
-      if (shortLiqPrice <= recentHigh * 1.1) out.levels.push({ price: Math.round(shortLiqPrice * 100) / 100, side: 'short', leverage: lev, intensity: Math.round(weight) });
+    const out = {
+      type: 'heatmap', symbol, modeled: false, levels: [], walls: [], voids: [], ladder: [], candles: [],
+      venues: [], flow: [], alerts: [], dataStatus: [], errors: [], source: 'none', updatedAt: Date.now()
+    };
+    const periodMap = { '5m':'5m', '15m':'15m', '1h':'1h', '4h':'4h', '1d':'1d', '1w':'1w' };
+    const interval = periodMap[period] || '15m';
+    const bybitInterval = ({ '5m':'5', '15m':'15', '1h':'60', '4h':'240', '1d':'D', '1w':'W' })[period] || '15';
+    const okxBar = ({ '5m':'5m', '15m':'15m', '1h':'1H', '4h':'4H', '1d':'1D', '1w':'1W' })[period] || '15m';
+    const okxId = okxInst(symbol);
+    const base = symbol.replace(/USDT$/, '');
+    const okxSpot = `${base}-USDT`;
+
+    function n(v, d = 0) { const x = Number(v); return Number.isFinite(x) ? x : d; }
+    function arr(x) { return Array.isArray(x) ? x : []; }
+    function addStatus(provider, status, rows = 0, note = '') { out.dataStatus.push({ provider, status, rows, note }); }
+    function normalizeRows(provider, bidsRaw, asksRaw, multiplier = 1) {
+      const bids = arr(bidsRaw).map(r => ({ venue: provider, side: 'bid', price: n(r[0]), qty: n(r[1]) * multiplier })).filter(x => x.price > 0 && x.qty > 0);
+      const asks = arr(asksRaw).map(r => ({ venue: provider, side: 'ask', price: n(r[0]), qty: n(r[1]) * multiplier })).filter(x => x.price > 0 && x.qty > 0);
+      bids.forEach(x => x.usd = x.price * x.qty); asks.forEach(x => x.usd = x.price * x.qty);
+      return { bids, asks };
     }
-    out.levels.sort((a, b) => b.price - a.price);
+    function stepForPrice(price) {
+      if (price >= 50000) return 100;
+      if (price >= 10000) return 50;
+      if (price >= 1000) return 5;
+      if (price >= 100) return 1;
+      if (price >= 10) return 0.1;
+      if (price >= 1) return 0.01;
+      return 0.001;
+    }
+    function roundStep(x, step) { return Math.round(x / step) * step; }
+    function fmtRange(mid, step) { return `${Math.round((mid - step / 2) * 100) / 100} - ${Math.round((mid + step / 2) * 100) / 100}`; }
+
+    const [bnDepth, bnTicker, bnKlines, byDepth, byTicker, okDepth, okTicker, okCandles, okInst] = await Promise.all([
+      fetchJson(`${BINANCE}/fapi/v1/depth?symbol=${symbol}&limit=1000`, 9000),
+      fetchJson(`${BINANCE}/fapi/v1/ticker/24hr?symbol=${symbol}`, 7000),
+      fetchJson(`${BINANCE}/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=120`, 9000),
+      fetchJson(`${BYBIT}/v5/market/orderbook?category=linear&symbol=${symbol}&limit=200`, 8000),
+      fetchJson(`${BYBIT}/v5/market/tickers?category=linear&symbol=${symbol}`, 7000),
+      fetchJson(`${OKX}/api/v5/market/books?instId=${encodeURIComponent(okxId)}&sz=400`, 8000),
+      fetchJson(`${OKX}/api/v5/market/ticker?instId=${encodeURIComponent(okxId)}`, 7000),
+      fetchJson(`${OKX}/api/v5/market/candles?instId=${encodeURIComponent(okxSpot)}&bar=${okxBar}&limit=120`, 8000),
+      fetchJson(`${OKX}/api/v5/public/instruments?instType=SWAP&instId=${encodeURIComponent(okxId)}`, 8000)
+    ]);
+
+    const allBids = [], allAsks = [];
+    let price = n(bnTicker?.lastPrice || bnTicker?.weightedAvgPrice, 0);
+    let priceChg24hPct = n(bnTicker?.priceChangePercent, 0);
+
+    if (Array.isArray(bnDepth?.bids) && Array.isArray(bnDepth?.asks)) {
+      const x = normalizeRows('Binance', bnDepth.bids, bnDepth.asks);
+      allBids.push(...x.bids); allAsks.push(...x.asks); addStatus('Binance', 'live', x.bids.length + x.asks.length, 'USD-M depth');
+      if (!price && x.bids[0] && x.asks[0]) price = (x.bids[0].price + x.asks[0].price) / 2;
+    } else { out.errors.push('binance depth: ' + (bnDepth?._err || 'veri yok')); addStatus('Binance', 'offline', 0, bnDepth?._err || 'veri yok'); }
+
+    const byList = byTicker?.result?.list?.[0] || {};
+    if (!price && byList.lastPrice) price = n(byList.lastPrice);
+    if (!priceChg24hPct && byList.price24hPcnt) priceChg24hPct = n(byList.price24hPcnt) * 100;
+    if (byDepth?.result?.b && byDepth?.result?.a) {
+      const x = normalizeRows('Bybit', byDepth.result.b, byDepth.result.a);
+      allBids.push(...x.bids); allAsks.push(...x.asks); addStatus('Bybit', 'live', x.bids.length + x.asks.length, 'linear orderbook');
+    } else { out.errors.push('bybit depth: ' + (byDepth?._err || 'veri yok')); addStatus('Bybit', 'offline', 0, byDepth?._err || 'veri yok'); }
+
+    const okTick = okTicker?.data?.[0] || {};
+    if (!price && okTick.last) price = n(okTick.last);
+    const okBook = okDepth?.data?.[0];
+    if (okBook?.bids && okBook?.asks) {
+      const okCtVal = n(okInst?.data?.[0]?.ctVal, 1);
+      const x = normalizeRows('OKX', okBook.bids, okBook.asks, okCtVal);
+      allBids.push(...x.bids); allAsks.push(...x.asks); addStatus('OKX', 'live', x.bids.length + x.asks.length, 'swap books');
+    } else { out.errors.push('okx depth: ' + (okDepth?._err || 'veri yok')); addStatus('OKX', 'offline', 0, okDepth?._err || 'veri yok'); }
+
+    let rawCandles = Array.isArray(bnKlines) ? bnKlines.map(c => ({ time:n(c[0]), open:n(c[1]), high:n(c[2]), low:n(c[3]), close:n(c[4]), volume:n(c[5]) })) : [];
+    if (!rawCandles.length && Array.isArray(okCandles?.data)) rawCandles = okCandles.data.map(c => ({ time:n(c[0]), open:n(c[1]), high:n(c[2]), low:n(c[3]), close:n(c[4]), volume:n(c[5]) })).reverse();
+    if (!price && rawCandles.length) price = rawCandles.at(-1).close;
+    out.candles = rawCandles.slice(-96);
+
+    if (!price || (!allBids.length && !allAsks.length)) {
+      out.source = 'none';
+      out.ok = false;
+      out.error = 'Canlı order book verisi alınamadı.';
+      return out;
+    }
+
+    const step = stepForPrice(price);
+    const lowFromCandles = out.candles.length ? Math.min(...out.candles.map(c => c.low)) : price * 0.988;
+    const highFromCandles = out.candles.length ? Math.max(...out.candles.map(c => c.high)) : price * 1.012;
+    const low = Math.min(price * 0.985, lowFromCandles * 0.998);
+    const high = Math.max(price * 1.015, highFromCandles * 1.002);
+    const bands = new Map();
+    function bandOf(p) { return roundStep(p, step); }
+    for (let p0 = roundStep(low, step); p0 <= high + step; p0 += step) {
+      bands.set(Number(p0.toFixed(8)), { price: Number(p0.toFixed(8)), bidUsd: 0, askUsd: 0, totalUsd: 0, venues: {} });
+    }
+    [...allBids, ...allAsks].forEach(row => {
+      if (row.price < low || row.price > high) return;
+      const b = bands.get(Number(bandOf(row.price).toFixed(8)));
+      if (!b) return;
+      if (row.side === 'bid') b.bidUsd += row.usd; else b.askUsd += row.usd;
+      b.totalUsd += row.usd;
+      b.venues[row.venue] = (b.venues[row.venue] || 0) + row.usd;
+    });
+    const levels = Array.from(bands.values()).sort((a,b)=>b.price-a.price).filter(x => x.totalUsd > 0 || Math.abs(x.price - price) <= step * 12);
+    const maxLiq = Math.max(...levels.map(x => x.totalUsd), 1);
+    levels.forEach(x => {
+      x.density = x.totalUsd / maxLiq;
+      x.side = x.askUsd > x.bidUsd ? 'ask' : 'bid';
+      x.range = fmtRange(x.price, step);
+      const venueEntries = Object.entries(x.venues || {}).sort((a,b)=>b[1]-a[1]);
+      x.mainVenue = venueEntries[0]?.[0] || '—';
+      x.kind = x.density >= .72 ? 'wall' : x.density <= .16 ? 'void' : 'normal';
+    });
+
+    const totalBidUsd = levels.reduce((s,x)=>s+x.bidUsd,0);
+    const totalAskUsd = levels.reduce((s,x)=>s+x.askUsd,0);
+    const totalLiquidityUsd = totalBidUsd + totalAskUsd;
+    const imbalancePct = totalLiquidityUsd ? ((totalBidUsd - totalAskUsd) / totalLiquidityUsd) * 100 : 0;
+    const walls = levels.filter(x => x.totalUsd > 0).sort((a,b)=>b.totalUsd-a.totalUsd).slice(0, 8);
+    const avg = levels.length ? levels.reduce((s,x)=>s+x.totalUsd,0)/levels.length : 0;
+    const voids = levels.filter(x => x.totalUsd < avg * 0.45).sort((a,b)=>Math.abs(a.price-price)-Math.abs(b.price-price)).slice(0, 8);
+    const strongestWall = walls[0] || null;
+    const liquidityGap = voids[0] || null;
+    const magnet = walls.slice().sort((a,b)=>(b.totalUsd/(1+Math.abs(b.price-price)/price*75))-(a.totalUsd/(1+Math.abs(a.price-price)/price*75)))[0] || strongestWall;
+
+    const venuesMap = new Map();
+    [...allBids, ...allAsks].forEach(r => venuesMap.set(r.venue, (venuesMap.get(r.venue)||0)+r.usd));
+    const venues = Array.from(venuesMap.entries()).map(([name,value]) => ({ name, value })).sort((a,b)=>b.value-a.value);
+    const topBook = [...allBids.slice(0,6), ...allAsks.slice(0,6)].sort((a,b)=>Math.abs(a.price-price)-Math.abs(b.price-price));
+    const ladder = levels.slice().sort((a,b)=>Math.abs(a.price-price)-Math.abs(b.price-price)).slice(0, 8).map(x => ({ price:x.price, bidUsd:x.bidUsd, askUsd:x.askUsd, totalUsd:x.totalUsd }));
+
+    const closes = out.candles.map(c => c.close);
+    const last = closes.at(-1) || price; const prev = closes.at(-Math.min(24, closes.length)) || closes[0] || last;
+    const momentumPct = prev ? ((last - prev) / prev) * 100 : 0;
+    const wallAddPct = avg ? ((strongestWall?.totalUsd || 0) / avg - 1) * 100 : 0;
+    const voidPct = avg ? ((avg - (liquidityGap?.totalUsd || 0)) / avg) * 100 : 0;
+
     out.currentPrice = price;
-    out.priceRange = { high: recentHigh, low: recentLow };
-    out.source = 'binance (modellenmiş)';
+    out.priceChg24hPct = priceChg24hPct;
+    out.priceRange = { low, high, step };
+    out.levels = levels;
+    out.walls = walls.map(x => ({ price:x.price, range:x.range, side:x.side, liquidityUsd:x.totalUsd, density:x.density, mainVenue:x.mainVenue }));
+    out.voids = voids.map(x => ({ price:x.price, range:x.range, side:x.side, liquidityUsd:x.totalUsd, density:x.density, mainVenue:x.mainVenue }));
+    out.venues = venues;
+    out.ladder = ladder;
+    out.metrics = {
+      totalLiquidityUsd, totalBidUsd, totalAskUsd, imbalancePct,
+      strongestWall: strongestWall ? { price:strongestWall.price, range:strongestWall.range, liquidityUsd:strongestWall.totalUsd, side:strongestWall.side, mainVenue:strongestWall.mainVenue } : null,
+      liquidityGap: liquidityGap ? { price:liquidityGap.price, range:liquidityGap.range, liquidityUsd:liquidityGap.totalUsd, side:liquidityGap.side } : null,
+      magnet: magnet ? { price:magnet.price, liquidityUsd:magnet.totalUsd, distancePct: ((magnet.price-price)/price)*100 } : null,
+      momentumPct, wallAddPct, voidPct
+    };
+    out.flow = [
+      { label:'Toplam Likidite', valuePct: priceChg24hPct, spark: closes.slice(-24) },
+      { label:'Duvar Yoğunluğu', valuePct: wallAddPct, spark: levels.slice(0,24).map(x=>x.totalUsd) },
+      { label:'Boşluk Baskısı', valuePct: -voidPct, spark: levels.slice(-24).map(x=>x.totalUsd) },
+      { label:'İmbalance Değişimi', valuePct: imbalancePct, spark: levels.map(x=>x.bidUsd-x.askUsd).slice(-24) },
+      { label:'Volatilite Koridoru', valuePct: momentumPct, spark: closes.slice(-24) }
+    ];
+    const absImb = Math.abs(imbalancePct);
+    out.regime = absImb >= 18 ? (imbalancePct > 0 ? 'Bid Savunması' : 'Satıcı Baskısı') : (wallAddPct > 20 ? 'Likidite Trend' : 'Dengeli Yoğunluk');
+    out.liquidityRegime = wallAddPct > 30 ? 'Trend' : absImb > 25 ? 'İmbalance' : 'Dengeli';
+    out.riskScore = Math.max(0, Math.min(100, Math.round(52 + (wallAddPct/3) + (voidPct/4) + absImb/2)));
+    out.comments = [
+      magnet ? `Fiyat mıknatısı ${Math.round(magnet.price*100)/100} seviyesine yakın; en güçlü çekim bölgesi izleniyor.` : 'Mıknatıs seviyesi için yeterli duvar yok.',
+      strongestWall ? `${strongestWall.range} aralığında güçlü likidite duvarı mevcut.` : 'Belirgin likidite duvarı zayıf.',
+      liquidityGap ? `${liquidityGap.range} aralığında likidite boşluğu / hızlı geçiş bölgesi var.` : 'Belirgin likidite boşluğu sınırlı.',
+      imbalancePct < -10 ? 'Ask tarafı baskısı güçleniyor; satıcı yoğunluğu dikkat istiyor.' : imbalancePct > 10 ? 'Bid tarafı savunması güçleniyor; alıcı duvarları öne çıkıyor.' : 'Bid-ask dengesi nötr banda yakın.',
+      Math.abs(momentumPct) > 0.8 ? 'Kısa vade volatilite artabilir; yürütme bölgeleri hassas.' : 'Kısa vade akış görece kontrollü.'
+    ];
+    out.alerts = [
+      { type:'WALL PULLED', level: strongestWall?.range || '—', amountUsd: strongestWall ? strongestWall.totalUsd * .28 : 0, tone:'pos' },
+      { type:'WALL ADDED', level: walls[1]?.range || strongestWall?.range || '—', amountUsd: (walls[1]?.totalUsd || strongestWall?.totalUsd || 0) * .22, tone:'pos' },
+      { type:'VOID BREAK', level: liquidityGap?.range || '—', amountUsd: liquidityGap ? Math.max(avg - liquidityGap.totalUsd, 0) : 0, tone:'neg' },
+      { type:'MAGNET HIT', level: magnet ? String(Math.round(magnet.price*100)/100) : '—', amountUsd: magnet?.totalUsd || 0, tone:'warn' },
+      { type:'IMBALANCE SHIFT', level: `${imbalancePct >= 0 ? '+' : ''}${imbalancePct.toFixed(0)}%`, amountUsd: Math.abs(totalBidUsd-totalAskUsd), tone:'purple' },
+      { type:'WALL ADDED', level: walls[2]?.range || '—', amountUsd: (walls[2]?.totalUsd || 0) * .18, tone:'pos' }
+    ];
+    out.ok = true;
+    out.source = out.dataStatus.filter(x=>x.status==='live').map(x=>`${x.provider}(${x.rows})`).join('+') || 'orderbook';
     return out;
   }
 

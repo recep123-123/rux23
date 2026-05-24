@@ -1,6 +1,6 @@
 /* RUx — Global Live Controls: input, timeframe, favorites */
-import { State, fetchMarket, fmtPrice, fmtPct, el, toast, coinShort, coinName } from './api.js?v=0.75.7-liquidation-source-health-20260524';
-import { ICN } from './components.js?v=0.75.7-liquidation-source-health-20260524';
+import { State, fetchMarket, fmtPrice, fmtPct, el, toast, coinShort, coinName } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
+import { ICN } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
 
 const STORAGE = Object.freeze({
   symbol: 'rux.global.symbol.v1',

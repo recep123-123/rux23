@@ -1,9 +1,9 @@
 /* RUx — Edge Kalibrasyon Paneli */
-import { el, State, fetchMarket } from './api.js?v=0.75.7-liquidation-source-health-20260524';
-import { ICN, statCard, card, pageHead, progress, tag } from './components.js?v=0.75.7-liquidation-source-health-20260524';
-import { canvasLineChart, canvasBarChart } from './charts.js?v=0.75.7-liquidation-source-health-20260524';
-import { makeEdgeCalibrationReport } from './rux_core.js?v=0.75.7-liquidation-source-health-20260524';
-import { makeForwardBreakdownReport } from './rux_journal.js?v=0.75.7-liquidation-source-health-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
+import { ICN, statCard, card, pageHead, progress, tag } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
+import { canvasLineChart, canvasBarChart } from './charts.js?v=0.75.8-heatmap-panel-live-20260524';
+import { makeEdgeCalibrationReport } from './rux_core.js?v=0.75.8-heatmap-panel-live-20260524';
+import { makeForwardBreakdownReport } from './rux_journal.js?v=0.75.8-heatmap-panel-live-20260524';
 
 function fmtR(n, d = 2) {
   const v = Number(n || 0);

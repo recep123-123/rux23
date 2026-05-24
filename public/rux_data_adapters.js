@@ -14,9 +14,9 @@ import {
   getRuxSourceLog,
   RUX_HEALTH_ENDPOINTS,
   testApiEndpoint
-} from './api.js?v=0.75.7-liquidation-source-health-20260524';
+} from './api.js?v=0.75.8-heatmap-panel-live-20260524';
 
-export const RUX_DATA_ADAPTER_VERSION = 'RUx v0.75.7-liquidation-source-health-20260524';
+export const RUX_DATA_ADAPTER_VERSION = 'RUx v0.75.8-heatmap-panel-live-20260524';
 
 export const RUX_UNIFIED_MARKET_SCHEMA = Object.freeze({
   symbol: 'string',

@@ -1,7 +1,7 @@
 /* RUx — central visible build/version authority (TEK SÜRÜM KAYNAĞI) */
-export const RUX_APP_VERSION = 'RUx v0.75.7';
-export const RUX_BUILD_ID = '0.75.7-liquidation-source-health-20260524';
-export const RUX_BUILD_LABEL = 'Liquidation source health layout';
+export const RUX_APP_VERSION = 'RUx v0.75.8';
+export const RUX_BUILD_ID = '0.75.8-heatmap-panel-live-20260524';
+export const RUX_BUILD_LABEL = 'Heatmap panel live order book';
 export const RUX_BUILD_TIME = '2026-05-24 Europe/Istanbul';
 
 export function applyRuxVersionBadges() {
