@@ -1,6 +1,6 @@
 /* RUx — Likidite & heatmap analiz modülleri */
-import { el, fetchMarket, fmtPrice, fmtNum, atr, ema } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { ICN, statCard, card, pageHead, tag, barbar, heatColorClass } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { el, fetchMarket, fmtPrice, fmtNum, atr, ema } from './api.js?v=0.75.5-liquidation-panel-live-20260524';
+import { ICN, statCard, card, pageHead, tag, barbar, heatColorClass } from './components.js?v=0.75.5-liquidation-panel-live-20260524';
 
 const SYMBOLS = ['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT','AVAXUSDT','LINKUSDT','DOGEUSDT','OPUSDT','ARBUSDT'];
 

@@ -1,7 +1,7 @@
 /* RUx — Monte Carlo Drawdown & Risk-of-Ruin wrapper
    Aynı sinyal Net-R dizisini farklı işlem sıralarıyla stres test eder.
    Emir göndermez; yalnızca araştırma ve risk dayanıklılığı raporu üretir. */
-import { makeMonteCarloRiskReport, makeRuxBacktestSnapshot, makeWalkForwardReport } from './rux_core.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { makeMonteCarloRiskReport, makeRuxBacktestSnapshot, makeWalkForwardReport } from './rux_core.js?v=0.75.5-liquidation-panel-live-20260524';
 
 function round(n, d = 2) {
   const v = Number(n || 0);

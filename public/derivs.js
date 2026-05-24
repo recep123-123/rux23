@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.5-liquidation-panel-live-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.5-liquidation-panel-live-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];
@@ -2013,44 +2013,114 @@ export async function renderDerivsCVD(host) {
 
 // ───────── 4) LIKIDASYON ─────────
 export async function renderDerivsLiq(host) {
-  const content = derivsShell(host, 'LİKİDASYONLAR',
-    'Zorunlu kapatılan pozisyonlar. Büyük long likidasyonu = aşağı fitil riski; büyük short likidasyonu = yukarı squeeze.',
-    () => renderDerivsLiq(host));
-  try {
-    const d = await fetchDerivs('liquidations', currentSymbol(), getPeriod());
-    content.innerHTML = '';
-    if (!d.ok && (!d.recent || !d.recent.length)) {
-      content.appendChild(el('div', { class: 'card' }, el('div', { class: 'small', style: 'color:var(--red,#ef4444);padding:14px' }, 'Likidasyon verisi alınamadı. ' + (d.errors || []).join('; '))));
-      return;
-    }
-    const tot = d.totals?.bybit || {};
-    const stats = el('div', { class: 'stat-row cols-3 section', 'data-rux-source': 'LIVE' });
-    stats.appendChild(statCard({ icon: ICN.warning(18), iconColor: 'red', label: 'LONG LİKİDASYON', value: tot.longLiqUsd ? '$' + fmtNum(tot.longLiqUsd) : '$0', sub: 'son ~200 emir', subColor: 'neg' }));
-    stats.appendChild(statCard({ icon: ICN.warning(18), iconColor: 'green', label: 'SHORT LİKİDASYON', value: tot.shortLiqUsd ? '$' + fmtNum(tot.shortLiqUsd) : '$0', sub: 'son ~200 emir', subColor: 'pos' }));
-    stats.appendChild(statCard({ icon: ICN.flame(18), iconColor: 'yellow', label: 'TOPLAM', value: tot.total ? '$' + fmtNum(tot.total) : '$0', sub: d.source }));
-    content.appendChild(stats);
+  host.innerHTML = '';
+  suppressOiOverhead(host);
+  const root = el('div', { class: 'derivs-dash derivs-liq-page', 'data-rux-source': 'LIVE' });
+  host.appendChild(root);
+  root.appendChild(el('div', { class: 'liq-loading' }, 'Likidasyon paneli canlı veriyle yükleniyor...'));
 
-    if (d.recent?.length) {
-      const tbl = el('table', { class: 'tbl tbl-compact' });
-      tbl.appendChild(el('thead', {}, el('tr', {}, el('th', {}, 'ZAMAN'), el('th', {}, 'YÖN'), el('th', { class: 'r' }, 'FİYAT'), el('th', { class: 'r' }, 'BOYUT'), el('th', { class: 'r' }, 'USD'))));
-      const tb = el('tbody', {});
-      d.recent.slice(0, 40).forEach(r => {
-        const liqSide = r.side === 'Sell' ? 'LONG likide' : 'SHORT likide';
-        const cls = r.side === 'Sell' ? 'neg' : 'pos';
-        tb.appendChild(el('tr', {},
-          el('td', { class: 'mono small' }, new Date(r.time).toLocaleTimeString('tr-TR')),
-          el('td', { class: cls }, liqSide),
-          el('td', { class: 'r mono' }, '$' + fmtPrice(r.price)),
-          el('td', { class: 'r mono' }, fmtNum(r.size)),
-          el('td', { class: 'r mono' }, '$' + fmtNum(r.usd))
-        ));
-      });
-      tbl.appendChild(tb);
-      content.appendChild(card({ title: 'SON LİKİDASYONLAR', actions: [sourceTag(d.source, d.errors)], body: el('div', { class: 'tbl-wrap' }, tbl) }));
-    }
-  } catch (e) {
-    content.innerHTML = '';
-    content.appendChild(el('div', { class: 'small muted', style: 'padding:14px' }, 'Hata: ' + (e?.message || e)));
+  const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, Number(v) || 0));
+  const num = (v, fb = 0) => { const n = Number(v); return Number.isFinite(n) ? n : fb; };
+  const sum = (arr = []) => arr.reduce((a,b)=>a+(Number(b)||0),0);
+  const fmtUsd = (v, digits = 2) => {
+    const n = Number(v); if (!Number.isFinite(n)) return '$0';
+    const a = Math.abs(n); const sign = n < 0 ? '-' : '';
+    if (a >= 1e9) return sign + '$' + (a / 1e9).toFixed(digits) + 'B';
+    if (a >= 1e6) return sign + '$' + (a / 1e6).toFixed(digits) + 'M';
+    if (a >= 1e3) return sign + '$' + (a / 1e3).toFixed(digits) + 'K';
+    return sign + '$' + a.toFixed(0);
+  };
+  const fmtCompact = (v, digits = 1) => {
+    const n = Number(v); if (!Number.isFinite(n)) return '0';
+    const a = Math.abs(n); const sign = n < 0 ? '-' : '';
+    if (a >= 1e9) return sign + (a / 1e9).toFixed(digits) + 'B';
+    if (a >= 1e6) return sign + (a / 1e6).toFixed(digits) + 'M';
+    if (a >= 1e3) return sign + (a / 1e3).toFixed(digits) + 'K';
+    return sign + a.toFixed(0);
+  };
+  const pct = (v, d = 1) => (Number.isFinite(Number(v)) ? Number(v).toFixed(d) + '%' : '—');
+  const mkSvg = (w, h, cls = '') => {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.setAttribute('width','100%'); svg.setAttribute('height', String(h)); svg.setAttribute('preserveAspectRatio','none');
+    if (cls) svg.setAttribute('class', cls);
+    const n = (tag, attrs = {}, text = '') => { const node = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k,v])=>node.setAttribute(k,String(v))); if (text !== '') node.textContent = String(text); return node; };
+    return { svg, n };
+  };
+  const sparkSvg = (vals = [], color = '#10e8a3') => {
+    const arr = vals.map(Number).filter(Number.isFinite); const wrap = el('div', { class: 'liq-spark' }); if (arr.length < 2) return wrap;
+    const W = 96, H = 34, { svg, n } = mkSvg(W,H); const mn = Math.min(...arr), mx = Math.max(...arr), rg = (mx-mn)||1;
+    const pts = arr.map((v,i)=>`${(i/(arr.length-1)*(W-4)+2).toFixed(1)},${(H-3-((v-mn)/rg)*(H-7)).toFixed(1)}`).join(' ');
+    svg.appendChild(n('polyline', { points:pts, fill:'none', stroke:color, 'stroke-width':2, 'stroke-linecap':'round', 'stroke-linejoin':'round' })); wrap.appendChild(svg); return wrap;
+  };
+  const gauge = (score, label) => {
+    const W=210,H=126,cx=105,cy=100,r=72,{svg,n}=mkSvg(W,H,'liq-gauge-svg');
+    [['#ff4f7b',Math.PI,Math.PI*1.36],['#ffb000',Math.PI*1.36,Math.PI*1.62],['#10e8a3',Math.PI*1.62,Math.PI*2]].forEach(([col,a1,a2])=>{ const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1), x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2); svg.appendChild(n('path',{d:`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`, fill:'none', stroke:col, 'stroke-width':13, opacity:.9})); });
+    const a=Math.PI+clamp(score)/100*Math.PI, nx=cx+(r-4)*Math.cos(a), ny=cy+(r-4)*Math.sin(a); svg.appendChild(n('line',{x1:cx,y1:cy,x2:nx,y2:ny,stroke:'#eef7fb','stroke-width':3,'stroke-linecap':'round'})); svg.appendChild(n('circle',{cx,cy,r:4.5,fill:'#eef7fb'}));
+    svg.appendChild(n('text',{x:cx,y:cy-13,'text-anchor':'middle',fill:'#eaf6fb','font-size':22,'font-weight':800}, String(Math.round(score))+' / 100'));
+    svg.appendChild(n('text',{x:cx,y:cy+8,'text-anchor':'middle',fill:'#c8d6dd','font-size':12}, label));
+    const wrap=el('div',{class:'liq-gauge-wrap'},svg); return wrap;
+  };
+
+  const bandChart = (clusters, currentPrice) => {
+    const W=930,H=300,L=74,R=146,T=20,B=42,{svg,n}=mkSvg(W,H,'liq-band-svg'); const plotW=W-L-R, plotH=H-T-B;
+    const maxUsd=Math.max(...clusters.map(c=>Math.max(c.longUsd,c.shortUsd)),1); const midX=L+plotW/2;
+    for(let i=0;i<5;i++){ const y=T+i*plotH/4; svg.appendChild(n('line',{x1:L,y1:y,x2:L+plotW,y2:y,stroke:'rgba(93,136,150,.20)','stroke-dasharray':'4 4'})); }
+    svg.appendChild(n('line',{x1:midX,y1:T,x2:midX,y2:T+plotH,stroke:'rgba(255,255,255,.40)','stroke-width':1}));
+    clusters.forEach((c,i)=>{ const y=T+(i+.5)*plotH/clusters.length, barH=Math.max(8, plotH/clusters.length*.56); const longW=(c.longUsd/maxUsd)*(plotW/2-12), shortW=(c.shortUsd/maxUsd)*(plotW/2-12); svg.appendChild(n('text',{x:L-9,y:y+4,'text-anchor':'end',fill:'#a9c0c9','font-size':12},fmtPrice(c.price))); if(shortW>0) svg.appendChild(n('rect',{x:midX-shortW,y:y-barH/2,width:shortW,height:barH,rx:2,fill:'#ff4f7b',opacity:.78})); if(longW>0) svg.appendChild(n('rect',{x:midX,y:y-barH/2,width:longW,height:barH,rx:2,fill:'#10e8a3',opacity:.78})); svg.appendChild(n('text',{x:L+plotW+12,y:y+4,fill:c.net>=0?'#10e8a3':'#ff4f7b','font-size':12,'font-weight':700},(c.net>=0?'+':'')+fmtUsd(c.net,1))); svg.appendChild(n('text',{x:W-8,y:y+4,'text-anchor':'end',fill:'#d4e3e9','font-size':12},fmtUsd(c.total,1))); });
+    if(currentPrice){ const closest=clusters.reduce((b,c,i)=>Math.abs(c.price-currentPrice)<Math.abs(clusters[b].price-currentPrice)?i:b,0); const y=T+(closest+.5)*plotH/clusters.length; svg.appendChild(n('line',{x1:L,y1:y,x2:L+plotW,y2:y,stroke:'rgba(255,255,255,.62)','stroke-dasharray':'5 5'})); svg.appendChild(n('text',{x:L+plotW-4,y:y-6,'text-anchor':'end',fill:'#d7e7ee','font-size':12},fmtPrice(currentPrice))); }
+    svg.appendChild(n('text',{x:midX-2,y:H-12,'text-anchor':'end',fill:'#a9c0c9','font-size':12},'Short likidasyon')); svg.appendChild(n('text',{x:midX+2,y:H-12,fill:'#a9c0c9','font-size':12},'Long likidasyon'));
+    return el('div',{class:'liq-chart-wrap'},svg,el('div',{class:'liq-density'},el('span',{},'Düşük Yoğunluk'),el('i',{}),el('span',{},'Yüksek Yoğunluk')));
+  };
+  const bubbleChart = (events) => {
+    const rows=events.slice().reverse().slice(-90); const W=930,H=245,L=56,R=22,T=18,B=32,{svg,n}=mkSvg(W,H,'liq-bubble-svg'); const plotW=W-L-R,plotH=H-T-B; const maxUsd=Math.max(...rows.map(x=>num(x.usd)),1); const now=Math.max(...rows.map(x=>num(x.time)),Date.now()), minT=Math.min(...rows.map(x=>num(x.time)), now-1); const total=rows.length||1;
+    svg.appendChild(n('line',{x1:L,y1:T+plotH/2,x2:W-R,y2:T+plotH/2,stroke:'rgba(255,255,255,.50)','stroke-width':1.2}));
+    rows.forEach((e,i)=>{ const x=L+((num(e.time,minT)-minT)/Math.max(1,now-minT))*plotW; const side=e.liquidatedSide==='Long'?-1:1; const y=T+plotH/2 + side*(8+Math.min(plotH/2-18, (num(e.usd)/maxUsd)*(plotH/2-14))); const rad=3+Math.sqrt(num(e.usd)/maxUsd)*16; svg.appendChild(n('circle',{cx:x.toFixed(1),cy:y.toFixed(1),r:rad.toFixed(1),fill:e.liquidatedSide==='Long'?'#ff4f7b':'#10e8a3',opacity:.58,stroke:e.liquidatedSide==='Long'?'#ff7192':'#4effc3','stroke-width':1})); });
+    for(let i=0;i<5;i++){ const x=L+i*plotW/4; svg.appendChild(n('text',{x,y:H-10,'text-anchor':i?'middle':'start',fill:'#9eb5bf','font-size':12}, i===4?'canlı':new Date(minT+(now-minT)*i/4).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}))); }
+    return el('div',{class:'liq-chart-wrap'},svg);
+  };
+  const donut = (items) => {
+    const W=172,H=172,cx=86,cy=86,r=58,sw=28,{svg,n}=mkSvg(W,H,'liq-donut-svg'); const total=sum(items.map(x=>x.value))||1; let a=-Math.PI/2; const pal=['#238dff','#10e8a3','#ff7b2f','#a855f7','#ff4f7b'];
+    items.forEach((it,idx)=>{ const f=it.value/total, a2=a+f*Math.PI*2; const x1=cx+r*Math.cos(a), y1=cy+r*Math.sin(a), x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2); svg.appendChild(n('path',{d:`M ${x1} ${y1} A ${r} ${r} 0 ${f>.5?1:0} 1 ${x2} ${y2}`,fill:'none',stroke:pal[idx%pal.length],'stroke-width':sw})); a=a2; });
+    svg.appendChild(n('text',{x:cx,y:cy-3,'text-anchor':'middle',fill:'#bcd0d8','font-size':12},'Toplam')); svg.appendChild(n('text',{x:cx,y:cy+18,'text-anchor':'middle',fill:'#fff','font-size':18,'font-weight':800},fmtUsd(total,2)));
+    return svg;
+  };
+
+  try {
+    const [d, market] = await Promise.all([fetchDerivs('liquidations', currentSymbol(), backendPeriod(getPeriod())), fetchMarket(currentSymbol(), backendPeriod(getPeriod()), 180)]);
+    const rawEvents = (d?.recent || []).filter(x=>Number.isFinite(num(x.usd)) && num(x.usd)>0);
+    root.innerHTML = '';
+    if ((!d?.ok && !rawEvents.length) || !rawEvents.length) { root.appendChild(el('div',{class:'liq-error-card'},'Likidasyon verisi alınamadı. '+(d?.errors||[]).join(' · '))); return; }
+    const events = rawEvents.map(x=>({ ...x, exchange:x.exchange||d.source||'Bybit', liquidatedSide:x.liquidatedSide || (x.side==='Sell'?'Long':'Short'), time:num(x.time,Date.now()), usd:num(x.usd), price:num(x.price), size:num(x.size) })).sort((a,b)=>b.time-a.time);
+    const longUsd=sum(events.filter(e=>e.liquidatedSide==='Long').map(e=>e.usd));
+    const shortUsd=sum(events.filter(e=>e.liquidatedSide==='Short').map(e=>e.usd));
+    const totalUsd=longUsd+shortUsd; const netScore=totalUsd ? (shortUsd-longUsd)/totalUsd : 0; const squeezeScore=clamp(50 + netScore*50);
+    const biggest=events.reduce((b,e)=>e.usd>(b?.usd||0)?e:b,null);
+    const candles=(market?.candles||market?.ohlcv||[]).filter(c=>Number.isFinite(num(c.close))); const currentPrice=num(candles.at(-1)?.close || events[0]?.price, 0);
+    const closes=candles.map(c=>num(c.close));
+    const exMap=new Map(); events.forEach(e=>{ const v=exMap.get(e.exchange)||0; exMap.set(e.exchange,v+e.usd); }); const exItems=[...exMap.entries()].map(([name,value])=>({name,value})).sort((a,b)=>b.value-a.value);
+    const minP=Math.min(...events.map(e=>e.price), currentPrice||Infinity), maxP=Math.max(...events.map(e=>e.price), currentPrice||0); const bands=9; const step=Math.max(1,(maxP-minP)/Math.max(1,bands-1));
+    const clusters=Array.from({length:bands},(_,i)=>({ price:maxP-i*step, longUsd:0, shortUsd:0, net:0, total:0 })); events.forEach(e=>{ const idx=clusters.reduce((best,c,i)=>Math.abs(c.price-e.price)<Math.abs(clusters[best].price-e.price)?i:best,0); if(e.liquidatedSide==='Long') clusters[idx].longUsd+=e.usd; else clusters[idx].shortUsd+=e.usd; clusters[idx].total+=e.usd; clusters[idx].net=clusters[idx].longUsd-clusters[idx].shortUsd; });
+    const regime = squeezeScore>=65?'Short Squeeze':squeezeScore<=35?'Long Flush':'Dengeli Tasfiye'; const regimeTone=squeezeScore>=65?'neg':squeezeScore<=35?'pos':'warn';
+
+    const kpi=(label,value,sub,tone='pos',sparkVals=[])=>el('div',{class:'liq-kpi '+tone},el('div',{class:'liq-kpi-label'},label),el('div',{class:'liq-kpi-value'},value),el('div',{class:'liq-kpi-sub'},sub||''),sparkSvg(sparkVals,tone==='neg'?'#ff4f7b':tone==='warn'?'#ffb000':'#10e8a3'));
+    root.appendChild(el('div',{class:'liq-topbar'},el('div',{class:'liq-titlebar'},el('div',{class:'liq-logo'},'LX'),el('div',{},el('div',{class:'liq-title'},'Likidasyon Paneli'),el('div',{class:'liq-subtitle'},'Gerçekleşen tasfiyeler, squeeze baskısı ve borsa bazlı dağılım'))),el('div',{class:'liq-status-row'},['Veri Kaynağı: Gerçek Zamanlı','Sembol: '+currentSymbol()+' Perp','Zaman Dilimi: '+periodLabel(getPeriod()),'Likidasyon Rejimi: '+regime,'Uyarı Durumu: '+(Math.abs(netScore)>.25?2:1)+' Uyarı'].map(t=>el('div',{class:'liq-status-chip'},el('span',{},t.split(':')[0]),el('b',{},t.split(':').slice(1).join(':').trim())))),el('div',{class:'liq-top-icons'},'🔔 ⚙ ⤢')));
+    root.appendChild(el('div',{class:'liq-kpi-row'},kpi('TOPLAM LİKİDASYON',fmtUsd(totalUsd,2),'+ canlı pencere','pos',events.slice(0,25).reverse().map(e=>e.usd)),kpi('LONG TASFİYE',fmtUsd(longUsd,2),pct(totalUsd?longUsd/totalUsd*100:0),'pos',events.filter(e=>e.liquidatedSide==='Long').slice(0,25).reverse().map(e=>e.usd)),kpi('SHORT TASFİYE',fmtUsd(shortUsd,2),pct(totalUsd?shortUsd/totalUsd*100:0),'neg',events.filter(e=>e.liquidatedSide==='Short').slice(0,25).reverse().map(e=>e.usd)),kpi('NET SQUEEZE SKORU',(netScore>=0?'+':'')+netScore.toFixed(2),netScore>=0?'Short baskın':'Long baskın',netScore>=0?'pos':'neg',closes.slice(-25)),kpi('EN BÜYÜK OLAY',fmtUsd(biggest?.usd||0,2),(biggest?.exchange||'—')+' · '+new Date(biggest?.time||Date.now()).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'warn',events.slice(0,25).map(e=>e.usd)),kpi('BASKIN REJİM',regime,Math.abs(netScore)>.35?'Aşırı Risk':'Kontrollü',regimeTone,closes.slice(-25))));
+
+    const comments=[`${biggest?.exchange||'Borsa'} tarafında ${fmtUsd(biggest?.usd,2)} büyüklüğünde tasfiye olayı öne çıkıyor.`, `Net squeeze skoru ${(netScore>=0?'+':'')+netScore.toFixed(2)}; ${netScore>=0?'short squeeze riski':'long flush baskısı'} izleniyor.`, `${exItems.length} canlı borsa/kaynak üzerinden dağılım derlendi.`, `Likidasyon akışı ${regime.toLowerCase()} rejimini destekliyor.`];
+    const tape=events.slice(0,11);
+    root.appendChild(el('div',{class:'liq-grid'},
+      el('div',{class:'liq-card liq-clusters'},el('div',{class:'liq-card-head'},el('div',{class:'liq-card-title'},'Gerçekleşmiş Likidasyon Kümeleri'),el('span',{},'Fiyat Bantları')),bandChart(clusters,currentPrice)),
+      el('div',{class:'liq-card liq-distribution'},el('div',{class:'liq-card-title'},'Borsa Bazlı Likidasyon Dağılımı'),el('div',{class:'liq-donut-layout'},donut(exItems),el('div',{class:'liq-ex-list'},...exItems.map((it,i)=>el('div',{class:'liq-ex-row'},el('i',{}),el('span',{},it.name),el('b',{},pct(it.value/totalUsd*100,1)),el('strong',{},fmtUsd(it.value,2)))))),el('div',{class:'liq-total-row'},'Toplam ',el('b',{},fmtUsd(totalUsd,2)))),
+      el('div',{class:'liq-card liq-comments'},el('div',{class:'liq-card-title'},'Tek Bakışta Yorum'),el('div',{class:'liq-comment-list'},...comments.map((c,i)=>el('div',{class:'liq-comment-item '+(i===0?'neg':'pos')},el('span',{},'●'),el('p',{},c)))),el('div',{class:'liq-regime-box'},el('span',{},'Genel Rejim'),el('b',{class:regimeTone},regime),gauge(squeezeScore,'Squeeze Riski'))),
+      el('div',{class:'liq-card liq-flow'},el('div',{class:'liq-card-head'},el('div',{class:'liq-card-title'},'Likidasyon Zaman Akışı'),el('span',{},'Baloncuk Boyutu: Tutar (USD)')),bubbleChart(events)),
+      el('div',{class:'liq-card liq-risk'},el('div',{class:'liq-card-title'},'Squeeze Risk Göstergesi'),gauge(squeezeScore, squeezeScore>=50?'Short Squeeze Riski':'Long Flush Riski')),
+      el('div',{class:'liq-card liq-tape'},el('div',{class:'liq-card-title'},'Canlı Likidasyon Tape'),el('div',{class:'liq-tape-table'},el('div',{class:'liq-tape-head'},'Zaman','Borsa','Taraf','Fiyat','Tutar'),...tape.map(e=>el('div',{class:'liq-tape-row '+(e.liquidatedSide==='Long'?'neg':'pos')},el('span',{},new Date(e.time).toLocaleTimeString('tr-TR')),el('span',{},e.exchange),el('b',{},e.liquidatedSide),el('span',{},fmtPrice(e.price)),el('strong',{},fmtUsd(e.usd,2))))))
+    ));
+    const sigs=[['LONG FLUSH',fmtUsd(longUsd,2),'neg'],['SHORT FLUSH',fmtUsd(shortUsd,2),'neg'],['CLUSTER BREAK',fmtPrice(clusters.sort((a,b)=>b.total-a.total)[0]?.price||currentPrice),'warn'],['CROSS-EXCHANGE CASCADE',exItems.length+' kaynak senkronize','purple'],['MOMENTUM REVERSAL',regime,'pos']];
+    root.appendChild(el('div',{class:'liq-signal-strip'},el('div',{class:'liq-signal-label'},'Aktif Likidasyon Sinyalleri'),el('div',{class:'liq-signal-row'},...sigs.map(s=>el('div',{class:'liq-signal-card '+s[2]},el('div',{class:'liq-signal-icon'},s[2]==='pos'?'↗':s[2]==='warn'?'▥':'〽'),el('div',{},el('b',{},s[0]),el('span',{},s[1]))))),el('button',{class:'liq-all-signals',on:{click:()=>window.OMNI?.navigate?window.OMNI.navigate('sinyal',{kaynak:'liquidations',symbol:currentSymbol(),tf:getPeriod()}):(location.hash='#/sinyal')}},'Sinyal Ayarları')));
+  } catch(e) {
+    root.innerHTML=''; root.appendChild(el('div',{class:'liq-error-card'},'Hata: '+(e?.message||e)));
   }
 }
 

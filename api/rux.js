@@ -3343,22 +3343,96 @@ HANDLERS['derivs'] = (() => {
     return out;
   }
 
-  // 4) LIKIDASYON — son zorunlu likidasyonlar + 24s toplam (Binance + Bybit)
+  // 4) LIKIDASYON — son zorunlu likidasyonlar + 24s toplam (Binance + Bybit + OKX)
   async function getLiquidations(symbol) {
-    const out = { type: 'liquidations', symbol, recent: [], totals: {}, errors: [] };
-    // Bybit son likidasyonlar (Binance allForceOrders artık kısıtlı)
-    const by = await fetchJson(`${BYBIT}/v5/market/liquidation?category=linear&symbol=${symbol}&limit=200`);
-    if (by?.result?.list?.length) {
-      let longLiq = 0, shortLiq = 0;
-      out.recent = by.result.list.slice(0, 50).map(d => {
-        const usd = Number(d.size) * Number(d.price);
-        // Bybit: side=Buy → short pozisyon likide oldu; side=Sell → long likide
-        if (d.side === 'Sell') longLiq += usd; else shortLiq += usd;
-        return { time: Number(d.updatedTime || d.time), side: d.side, price: Number(d.price), size: Number(d.size), usd };
-      });
-      out.totals.bybit = { longLiqUsd: longLiq, shortLiqUsd: shortLiq, total: longLiq + shortLiq };
-      out.source = 'bybit';
-    } else { out.errors.push('bybit: ' + (by._err || 'veri yok')); out.source = 'none'; }
+    const out = { type: 'liquidations', symbol, recent: [], totals: {}, byExchange: {}, errors: [], dataStatus: [] };
+    const addEvent = (ev) => {
+      const usd = Number(ev.usd);
+      if (!Number.isFinite(usd) || usd <= 0) return;
+      out.recent.push(ev);
+      const ex = ev.exchange || 'Unknown';
+      out.byExchange[ex] = out.byExchange[ex] || { longLiqUsd: 0, shortLiqUsd: 0, total: 0, count: 0 };
+      if (ev.liquidatedSide === 'Long') out.byExchange[ex].longLiqUsd += usd;
+      else out.byExchange[ex].shortLiqUsd += usd;
+      out.byExchange[ex].total += usd;
+      out.byExchange[ex].count += 1;
+    };
+
+    // Binance USD-M forced orders — public endpoint; SELL order usually closes a long, BUY closes a short.
+    try {
+      const bn = await fetchJson(`${BINANCE}/fapi/v1/allForceOrders?symbol=${symbol}&limit=100`);
+      if (Array.isArray(bn)) {
+        bn.forEach(d => {
+          const price = Number(d.avgPrice || d.price);
+          const size = Number(d.executedQty || d.origQty);
+          const usd = Number(d.cumQuote) || price * size;
+          const liquidatedSide = String(d.side).toUpperCase() === 'SELL' ? 'Long' : 'Short';
+          addEvent({ time: Number(d.time), side: d.side, liquidatedSide, exchange: 'Binance', price, size, usd, symbol: d.symbol || symbol });
+        });
+        out.dataStatus.push({ key:'binance_liq', provider:'Binance', status:'live', rows:bn.length, note:'fapi allForceOrders' });
+      } else {
+        out.errors.push('binance: ' + (bn?._err || 'veri yok'));
+        out.dataStatus.push({ key:'binance_liq', provider:'Binance', status:'offline', rows:0, note:bn?._err || 'veri yok' });
+      }
+    } catch(e) { out.errors.push('binance: ' + (e?.message || e)); }
+
+    // Bybit linear liquidation feed.
+    try {
+      const by = await fetchJson(`${BYBIT}/v5/market/liquidation?category=linear&symbol=${symbol}&limit=200`);
+      if (by?.result?.list?.length) {
+        by.result.list.forEach(d => {
+          const price = Number(d.price);
+          const size = Number(d.size);
+          const usd = price * size;
+          // Bybit: side=Sell → long pozisyon likide; side=Buy → short pozisyon likide.
+          const liquidatedSide = d.side === 'Sell' ? 'Long' : 'Short';
+          addEvent({ time: Number(d.updatedTime || d.time), side: d.side, liquidatedSide, exchange:'Bybit', price, size, usd, symbol });
+        });
+        out.dataStatus.push({ key:'bybit_liq', provider:'Bybit', status:'live', rows:by.result.list.length, note:'market liquidation' });
+      } else {
+        out.errors.push('bybit: ' + (by?._err || 'veri yok'));
+        out.dataStatus.push({ key:'bybit_liq', provider:'Bybit', status:'offline', rows:0, note:by?._err || 'veri yok' });
+      }
+    } catch(e) { out.errors.push('bybit: ' + (e?.message || e)); }
+
+    // OKX public liquidation orders. uly format BTC-USDT for BTCUSDT.
+    try {
+      const base = symbol.replace(/USDT$/,'');
+      const okxUly = `${base}-USDT`;
+      const ok = await fetchJson(`https://www.okx.com/api/v5/public/liquidation-orders?instType=SWAP&uly=${encodeURIComponent(okxUly)}&state=filled`);
+      const details = [];
+      if (Array.isArray(ok?.data)) ok.data.forEach(block => Array.isArray(block.details) && block.details.forEach(x => details.push(x)));
+      if (details.length) {
+        details.slice(0, 120).forEach(d => {
+          const price = Number(d.bkPx || d.price || d.px);
+          const size = Number(d.sz || d.size);
+          const usd = price * size;
+          const rawSide = String(d.side || '').toLowerCase();
+          const rawPos = String(d.posSide || '').toLowerCase();
+          const liquidatedSide = rawPos === 'long' || rawSide === 'sell' ? 'Long' : 'Short';
+          addEvent({ time: Number(d.ts), side: d.side || d.posSide, liquidatedSide, exchange:'OKX', price, size, usd, symbol: d.instId || symbol });
+        });
+        out.dataStatus.push({ key:'okx_liq', provider:'OKX', status:'live', rows:details.length, note:'public liquidation-orders' });
+      } else {
+        out.errors.push('okx: ' + (ok?._err || 'veri yok'));
+        out.dataStatus.push({ key:'okx_liq', provider:'OKX', status:'offline', rows:0, note:ok?._err || 'veri yok' });
+      }
+    } catch(e) { out.errors.push('okx: ' + (e?.message || e)); }
+
+    out.recent.sort((a,b)=>Number(b.time||0)-Number(a.time||0));
+    let longLiq = 0, shortLiq = 0;
+    out.recent.forEach(e => { if (e.liquidatedSide === 'Long') longLiq += Number(e.usd)||0; else shortLiq += Number(e.usd)||0; });
+    out.totals = {
+      longLiqUsd: longLiq,
+      shortLiqUsd: shortLiq,
+      total: longLiq + shortLiq,
+      bybit: out.byExchange.Bybit || { longLiqUsd:0, shortLiqUsd:0, total:0, count:0 },
+      binance: out.byExchange.Binance || { longLiqUsd:0, shortLiqUsd:0, total:0, count:0 },
+      okx: out.byExchange.OKX || { longLiqUsd:0, shortLiqUsd:0, total:0, count:0 }
+    };
+    out.source = Object.keys(out.byExchange).join('+') || 'none';
+    out.ok = out.recent.length > 0;
+    out.dataQuality = out.ok ? (Object.keys(out.byExchange).length >= 2 ? 'live' : 'degraded') : 'offline';
     return out;
   }
 

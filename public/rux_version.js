@@ -1,7 +1,7 @@
 /* RUx — central visible build/version authority (TEK SÜRÜM KAYNAĞI) */
-export const RUX_APP_VERSION = 'RUx v0.75.4';
-export const RUX_BUILD_ID = '0.75.4-cvd-headerfix-overflowfix-20260524';
-export const RUX_BUILD_LABEL = 'CVD header/overflow fix';
+export const RUX_APP_VERSION = 'RUx v0.75.5';
+export const RUX_BUILD_ID = '0.75.5-liquidation-panel-live-20260524';
+export const RUX_BUILD_LABEL = 'Liquidation panel live layout';
 export const RUX_BUILD_TIME = '2026-05-24 Europe/Istanbul';
 
 export function applyRuxVersionBadges() {

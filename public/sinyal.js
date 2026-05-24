@@ -1,11 +1,11 @@
 /* RUx — Sinyal Table Data Integrity Fix */
-import { State, fetchMarket, fetchFutures, fetchCVD, el, fmtPct, fmtPrice, coinShort, coinName, toast } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { ICN, statCard, card, pageHead, coinPill, barbar, sparkline, checklist } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { makeRuxDecisionSnapshot, analyzeLiveMarketSignal, statusClass, makeSignalDataSourceTags, makeSignalExplainabilityReport, simulateManualPlanOutcome, htfTimeframeOf } from './rux_core.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { recordSignal, recordOutcome, recordAudit, resolvePendingOutcomes, setupPerformance, deploymentReport } from './rux_storage.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { currentMacroFlag } from './rux_macro.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { buildRuleBuilderReport } from './rux_rulebuilder.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { hydrateOrderflowSlot } from './rux_orderflow.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { State, fetchMarket, fetchFutures, fetchCVD, el, fmtPct, fmtPrice, coinShort, coinName, toast } from './api.js?v=0.75.5-liquidation-panel-live-20260524';
+import { ICN, statCard, card, pageHead, coinPill, barbar, sparkline, checklist } from './components.js?v=0.75.5-liquidation-panel-live-20260524';
+import { makeRuxDecisionSnapshot, analyzeLiveMarketSignal, statusClass, makeSignalDataSourceTags, makeSignalExplainabilityReport, simulateManualPlanOutcome, htfTimeframeOf } from './rux_core.js?v=0.75.5-liquidation-panel-live-20260524';
+import { recordSignal, recordOutcome, recordAudit, resolvePendingOutcomes, setupPerformance, deploymentReport } from './rux_storage.js?v=0.75.5-liquidation-panel-live-20260524';
+import { currentMacroFlag } from './rux_macro.js?v=0.75.5-liquidation-panel-live-20260524';
+import { buildRuleBuilderReport } from './rux_rulebuilder.js?v=0.75.5-liquidation-panel-live-20260524';
+import { hydrateOrderflowSlot } from './rux_orderflow.js?v=0.75.5-liquidation-panel-live-20260524';
 
 function getActiveRuleSetSafe() {
   try {

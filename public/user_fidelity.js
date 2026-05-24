@@ -1,7 +1,7 @@
 /* RUx — User Execution Fidelity Tracker ekranı */
-import { el, toast } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { ICN, statCard, card, pageHead, tag, barbar } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { canvasBarChart } from './charts.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { el, toast } from './api.js?v=0.75.5-liquidation-panel-live-20260524';
+import { ICN, statCard, card, pageHead, tag, barbar } from './components.js?v=0.75.5-liquidation-panel-live-20260524';
+import { canvasBarChart } from './charts.js?v=0.75.5-liquidation-panel-live-20260524';
 import {
   addUserExecution,
   buildExecutionFidelityReport,
@@ -9,8 +9,8 @@ import {
   loadUserExecutions,
   removeUserExecution,
   seedDemoExecutions
-} from './rux_execution_fidelity.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { formatJournalR } from './rux_journal.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+} from './rux_execution_fidelity.js?v=0.75.5-liquidation-panel-live-20260524';
+import { formatJournalR } from './rux_journal.js?v=0.75.5-liquidation-panel-live-20260524';
 
 function pct(n, d = 1) { return '%' + Number(n || 0).toFixed(d); }
 function rtxt(n, d = 2) { return formatJournalR(Number(n || 0), d); }

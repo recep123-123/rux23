@@ -1,6 +1,6 @@
 /* RUx — Hesaplayıcılar (real working calculators panel) */
-import { State, el, toast, fetchMarket } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { State, el, toast, fetchMarket } from './api.js?v=0.75.5-liquidation-panel-live-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.5-liquidation-panel-live-20260524';
 
 function num(v, def = 0) { const n = parseFloat(v); return isNaN(n) ? def : n; }
 function fmtUsd(n) {
