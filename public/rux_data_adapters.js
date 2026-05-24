@@ -14,9 +14,9 @@ import {
   getRuxSourceLog,
   RUX_HEALTH_ENDPOINTS,
   testApiEndpoint
-} from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+} from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
-export const RUX_DATA_ADAPTER_VERSION = 'RUx v0.75.11-heatmap-tf-recalibration-20260524';
+export const RUX_DATA_ADAPTER_VERSION = 'RUx v0.75.12-heatmap-premium-visual-pass-20260524';
 
 export const RUX_UNIFIED_MARKET_SCHEMA = Object.freeze({
   symbol: 'string',

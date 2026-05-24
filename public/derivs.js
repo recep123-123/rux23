@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];
@@ -2169,10 +2169,18 @@ function hmSpark(values = [], color = '#10e8a3', w = 86, h = 34) {
   const a = (values || []).map(Number).filter(Number.isFinite);
   if (a.length < 2) return svg;
   const min = Math.min(...a), max = Math.max(...a), span = max - min || 1;
-  const pts = a.map((v, i) => `${(i/(a.length-1))*w},${h - ((v-min)/span)*h}`).join(' ');
+  const pts = a.map((v, i) => `${(i/(a.length-1))*w},${h - 3 - ((v-min)/span)*(h-6)}`).join(' ');
+  const gradId = 'spg' + Math.random().toString(36).slice(2);
+  const defs = document.createElementNS(ns, 'defs');
+  defs.innerHTML = `<linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.35"/><stop offset="100%" stop-color="${color}" stop-opacity="0.02"/></linearGradient>`;
+  svg.appendChild(defs);
+  const area = document.createElementNS(ns, 'polygon');
+  area.setAttribute('points', `0,${h-1} ${pts} ${w},${h-1}`); area.setAttribute('fill', `url(#${gradId})`); svg.appendChild(area);
   const p = document.createElementNS(ns, 'polyline');
-  p.setAttribute('points', pts); p.setAttribute('fill', 'none'); p.setAttribute('stroke', color); p.setAttribute('stroke-width', '2.4'); p.setAttribute('stroke-linejoin', 'round'); p.setAttribute('stroke-linecap', 'round');
-  svg.appendChild(p); return svg;
+  p.setAttribute('points', pts); p.setAttribute('fill', 'none'); p.setAttribute('stroke', color); p.setAttribute('stroke-width', '2.3'); p.setAttribute('stroke-linejoin', 'round'); p.setAttribute('stroke-linecap', 'round'); svg.appendChild(p);
+  const last = pts.split(' ').at(-1).split(',');
+  const dot = document.createElementNS(ns, 'circle'); dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); dot.setAttribute('r', '2.6'); dot.setAttribute('fill', color); svg.appendChild(dot);
+  return svg;
 }
 function hmKpi(label, value, sub, tone = 'pos', sparkVals = []) {
   const color = tone === 'neg' ? '#ff4f7b' : tone === 'warn' ? '#ffb000' : '#10e8a3';
@@ -2192,15 +2200,19 @@ function hmCard(title, body, extraClass = '', action = '') {
 function hmGauge(score = 50, label = 'GÜÇLÜ') {
   const ns = 'http://www.w3.org/2000/svg'; const w = 214, h = 145, cx = 107, cy = 118, r = 76;
   const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.setAttribute('class', 'hm-gauge');
+  const defs = document.createElementNS(ns, 'defs');
+  defs.innerHTML = '<filter id="gGlow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  svg.appendChild(defs);
+  const track=document.createElementNS(ns,'path'); track.setAttribute('d',`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`); track.setAttribute('fill','none'); track.setAttribute('stroke','rgba(150,190,205,.12)'); track.setAttribute('stroke-width','15'); svg.appendChild(track);
   const segs = [['#ff4f7b', Math.PI, Math.PI*1.25], ['#ff7a45', Math.PI*1.25, Math.PI*1.45], ['#ffb000', Math.PI*1.45, Math.PI*1.62], ['#7ee86b', Math.PI*1.62, Math.PI*1.81], ['#10e8a3', Math.PI*1.81, Math.PI*2]];
-  segs.forEach(([c,a1,a2]) => { const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1), x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2); const p=document.createElementNS(ns,'path'); p.setAttribute('d',`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`); p.setAttribute('fill','none'); p.setAttribute('stroke',c); p.setAttribute('stroke-width','13'); p.setAttribute('opacity','.92'); svg.appendChild(p); });
-  for (let i=0;i<=26;i++){ const a=Math.PI+i/26*Math.PI; const x1=cx+(r+8)*Math.cos(a), y1=cy+(r+8)*Math.sin(a), x2=cx+(r+14)*Math.cos(a), y2=cy+(r+14)*Math.sin(a); const l=document.createElementNS(ns,'line'); l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2); l.setAttribute('stroke', i%5?'rgba(167,227,237,.35)':'rgba(167,227,237,.75)'); l.setAttribute('stroke-width', i%5?'1':'1.6'); svg.appendChild(l); }
+  segs.forEach(([c,a1,a2]) => { const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1), x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2); const p=document.createElementNS(ns,'path'); p.setAttribute('d',`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`); p.setAttribute('fill','none'); p.setAttribute('stroke',c); p.setAttribute('stroke-width','13'); p.setAttribute('opacity','.95'); p.setAttribute('filter','url(#gGlow)'); svg.appendChild(p); });
+  for (let i=0;i<=28;i++){ const a=Math.PI+i/28*Math.PI; const x1=cx+(r+7)*Math.cos(a), y1=cy+(r+7)*Math.sin(a), x2=cx+(r+13)*Math.cos(a), y2=cy+(r+13)*Math.sin(a); const l=document.createElementNS(ns,'line'); l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2); l.setAttribute('stroke', i%7?'rgba(167,227,237,.22)':'rgba(167,227,237,.68)'); l.setAttribute('stroke-width', i%7?'1':'1.6'); svg.appendChild(l); }
   const frac = Math.max(0, Math.min(1, Number(score || 0) / 100)); const a = Math.PI + frac * Math.PI;
-  const x = cx + (r-7) * Math.cos(a), y = cy + (r-7) * Math.sin(a);
-  const needle = document.createElementNS(ns, 'line'); needle.setAttribute('x1', cx); needle.setAttribute('y1', cy); needle.setAttribute('x2', x); needle.setAttribute('y2', y); needle.setAttribute('stroke', '#e9f8ff'); needle.setAttribute('stroke-width', '3'); needle.setAttribute('stroke-linecap', 'round'); svg.appendChild(needle);
-  const dot=document.createElementNS(ns,'circle'); dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r','7'); dot.setAttribute('fill','#e9f8ff'); svg.appendChild(dot);
-  const txt=document.createElementNS(ns,'text'); txt.setAttribute('x',cx); txt.setAttribute('y',cy-24); txt.setAttribute('text-anchor','middle'); txt.setAttribute('fill','#e9f8ff'); txt.setAttribute('font-size','18'); txt.setAttribute('font-weight','900'); txt.textContent=String(Math.round(score)); svg.appendChild(txt);
-  const sub=document.createElementNS(ns,'text'); sub.setAttribute('x',cx); sub.setAttribute('y',cy+28); sub.setAttribute('text-anchor','middle'); sub.setAttribute('fill','#10e8a3'); sub.setAttribute('font-size','15'); sub.setAttribute('font-weight','900'); sub.textContent=label; svg.appendChild(sub);
+  const x = cx + (r-8) * Math.cos(a), y = cy + (r-8) * Math.sin(a);
+  const needle = document.createElementNS(ns, 'line'); needle.setAttribute('x1', cx); needle.setAttribute('y1', cy); needle.setAttribute('x2', x); needle.setAttribute('y2', y); needle.setAttribute('stroke', '#eefbff'); needle.setAttribute('stroke-width', '3.2'); needle.setAttribute('stroke-linecap', 'round'); svg.appendChild(needle);
+  const dot=document.createElementNS(ns,'circle'); dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r','7'); dot.setAttribute('fill','#eefbff'); svg.appendChild(dot);
+  const txt=document.createElementNS(ns,'text'); txt.setAttribute('x',cx); txt.setAttribute('y',cy-20); txt.setAttribute('text-anchor','middle'); txt.setAttribute('fill','#eefbff'); txt.setAttribute('font-size','19'); txt.setAttribute('font-weight','900'); txt.textContent=String(Math.round(score)); svg.appendChild(txt);
+  const sub=document.createElementNS(ns,'text'); sub.setAttribute('x',cx); sub.setAttribute('y',cy+28); sub.setAttribute('text-anchor','middle'); sub.setAttribute('fill','#10e8a3'); sub.setAttribute('font-size','14'); sub.setAttribute('font-weight','900'); sub.textContent=label; svg.appendChild(sub);
   return svg;
 }
 function hmDonut(items = [], totalLabel = '') {
@@ -2208,29 +2220,68 @@ function hmDonut(items = [], totalLabel = '') {
   const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', `0 0 ${size} ${size}`); svg.setAttribute('class', 'hm-donut');
   const total = items.reduce((s,x)=>s+Number(x.value||0),0) || 1; let a=-Math.PI/2;
   const pal=['#3b82f6','#10e8a3','#ff8b35','#f55280','#8b5cf6','#9aaec0'];
+  const base = document.createElementNS(ns,'circle'); base.setAttribute('cx',cx); base.setAttribute('cy',cy); base.setAttribute('r',r); base.setAttribute('fill','none'); base.setAttribute('stroke','rgba(180,220,234,.12)'); base.setAttribute('stroke-width',sw); svg.appendChild(base);
   items.forEach((it,i)=>{ const f=Number(it.value||0)/total; const a2=a+f*Math.PI*2; const x1=cx+r*Math.cos(a), y1=cy+r*Math.sin(a), x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2); const p=document.createElementNS(ns,'path'); p.setAttribute('d',`M ${x1} ${y1} A ${r} ${r} 0 ${f>.5?1:0} 1 ${x2} ${y2}`); p.setAttribute('fill','none'); p.setAttribute('stroke',pal[i%pal.length]); p.setAttribute('stroke-width',sw); p.setAttribute('stroke-linecap','butt'); svg.appendChild(p); a=a2; });
+  const hole = document.createElementNS(ns,'circle'); hole.setAttribute('cx',cx); hole.setAttribute('cy',cy); hole.setAttribute('r',27); hole.setAttribute('fill','rgba(6,18,28,.98)'); svg.appendChild(hole);
   const t1=document.createElementNS(ns,'text'); t1.setAttribute('x',cx); t1.setAttribute('y',cy-4); t1.setAttribute('fill','#dff8ff'); t1.setAttribute('font-weight','800'); t1.setAttribute('font-size','11'); t1.setAttribute('text-anchor','middle'); t1.textContent='Toplam'; svg.appendChild(t1);
   const t2=document.createElementNS(ns,'text'); t2.setAttribute('x',cx); t2.setAttribute('y',cy+13); t2.setAttribute('fill','#fff'); t2.setAttribute('font-weight','900'); t2.setAttribute('font-size','14'); t2.setAttribute('text-anchor','middle'); t2.textContent=totalLabel || hmUsd(total,2); svg.appendChild(t2);
   return svg;
 }
 function hmHeatmapSvg(d) {
-  const ns = 'http://www.w3.org/2000/svg'; const w=1120, h=318, l=48, r=86, t=18, b=30;
-  const plotW=w-l-r, plotH=h-t-b; const low=Number(d?.priceRange?.low || 0), high=Number(d?.priceRange?.high || 1); const span=high-low || 1;
+  const ns = 'http://www.w3.org/2000/svg';
+  const w=1120, h=318, l=48, r=86, t=18, b=30;
+  const plotW=w-l-r, plotH=h-t-b;
+  const low=Number(d?.priceRange?.low || 0), high=Number(d?.priceRange?.high || 1), span=Math.max(1e-9, high-low);
   const svg=document.createElementNS(ns,'svg'); svg.setAttribute('viewBox',`0 0 ${w} ${h}`); svg.setAttribute('class','hm-main-svg');
   const candleWindow = Math.max(24, Math.min(Number(d?.chartWindow || 70), (d.candles||[]).length || 70));
   const candles=(d.candles||[]).slice(-candleWindow);
-  const yOf=p=>t + (high-Number(p))/span*plotH; const xOf=i=>l + (i/Math.max(1,candles.length-1))*plotW;
-  const defs=document.createElementNS(ns,'defs'); defs.innerHTML='<filter id="hmGlow" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><linearGradient id="hmBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(4,33,50,.82)"/><stop offset="100%" stop-color="rgba(1,18,29,.96)"/></linearGradient></defs>'; svg.appendChild(defs);
-  const bg=document.createElementNS(ns,'rect'); bg.setAttribute('x',l); bg.setAttribute('y',t); bg.setAttribute('width',plotW); bg.setAttribute('height',plotH); bg.setAttribute('fill','url(#hmBg)'); svg.appendChild(bg);
-  for(let i=0;i<9;i++){ const y=t+i/8*plotH; const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','rgba(110,201,230,.10)'); svg.appendChild(line); }
-  for(let i=0;i<12;i++){ const x=l+i/11*plotW; const line=document.createElementNS(ns,'line'); line.setAttribute('y1',t); line.setAttribute('y2',t+plotH); line.setAttribute('x1',x); line.setAttribute('x2',x); line.setAttribute('stroke','rgba(110,201,230,.07)'); svg.appendChild(line); }
-  const levels=(d.levels||[]).slice().sort((a,b)=>Number(b.totalUsd||0)-Number(a.totalUsd||0)).slice(0,48);
-  levels.forEach((lv,idx)=>{ const y=yOf(lv.price), bandH=Math.max(3, Math.min(20, (d?.priceRange?.step || 1) / span * plotH * 1.85)); const dens=Math.max(.08, Math.min(1, Number(lv.density||0))); const isVoid=lv.kind==='void'; const col=isVoid?'#ff4f7b':dens>.72?'#10e8a3':'#1f9dff'; const segs=isVoid?2:5; for(let s=0;s<segs;s++){ const drift=((idx*31+s*97)%260); const x=l + (drift/260)*plotW*.18 + s*(plotW/segs)*.92; const ww=(plotW/segs)*(isVoid?.38:.86)*(.35+dens*.72); const rect=document.createElementNS(ns,'rect'); rect.setAttribute('x',x); rect.setAttribute('y',y-bandH/2); rect.setAttribute('width',Math.min(ww, l+plotW-x)); rect.setAttribute('height',bandH); rect.setAttribute('rx','3'); rect.setAttribute('fill',col); rect.setAttribute('opacity',String(isVoid?(.20+dens*.18):(.10+dens*.72))); rect.setAttribute('filter',dens>.48?'url(#hmGlow)':''); svg.appendChild(rect); } });
-  const candleW = Math.max(2.2, Math.min(7.2, plotW / Math.max(28, candles.length) * 0.7));
-  candles.forEach((c,i)=>{ const x=xOf(i); const yo=yOf(c.open), yc=yOf(c.close), yh=yOf(c.high), yl=yOf(c.low); const col=c.close>=c.open?'#22f1bc':'#ff4f7b'; const wick=document.createElementNS(ns,'line'); wick.setAttribute('x1',x); wick.setAttribute('x2',x); wick.setAttribute('y1',yh); wick.setAttribute('y2',yl); wick.setAttribute('stroke',col); wick.setAttribute('stroke-width', candleW > 4.5 ? '1.8' : '1.4'); wick.setAttribute('opacity','.96'); svg.appendChild(wick); const body=document.createElementNS(ns,'rect'); body.setAttribute('x',x-candleW/2); body.setAttribute('width', String(candleW)); body.setAttribute('y',Math.min(yo,yc)); body.setAttribute('height',Math.max(3,Math.abs(yc-yo))); body.setAttribute('rx','1.1'); body.setAttribute('fill',col); body.setAttribute('opacity','.98'); svg.appendChild(body); });
-  const current=Number(d.currentPrice||0), magnet=Number(d.metrics?.magnet?.price||0); if(magnet){ const y=yOf(magnet); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW+56); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','#ffb000'); line.setAttribute('stroke-width','1.8'); line.setAttribute('stroke-dasharray','5 4'); svg.appendChild(line); const tag=document.createElementNS(ns,'text'); tag.setAttribute('x',l+plotW+14); tag.setAttribute('y',y+5); tag.setAttribute('fill','#ffb000'); tag.setAttribute('font-size','12'); tag.setAttribute('font-weight','900'); tag.textContent='MAGNET'; svg.appendChild(tag); }
-  if(current){ const y=yOf(current); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','rgba(255,255,255,.35)'); line.setAttribute('stroke-dasharray','2 5'); svg.appendChild(line); const bx=document.createElementNS(ns,'rect'); bx.setAttribute('x',l+plotW+22); bx.setAttribute('y',y-10); bx.setAttribute('width','58'); bx.setAttribute('height','20'); bx.setAttribute('rx','5'); bx.setAttribute('fill','#f5fbff'); svg.appendChild(bx); const tx=document.createElementNS(ns,'text'); tx.setAttribute('x',l+plotW+51); tx.setAttribute('y',y+5); tx.setAttribute('fill','#06131f'); tx.setAttribute('font-size','11'); tx.setAttribute('font-weight','900'); tx.setAttribute('text-anchor','middle'); tx.textContent=fmtPrice(current); svg.appendChild(tx); }
-  const labelRows=[d.walls?.[0], d.walls?.[1], d.voids?.[0]].filter(Boolean); labelRows.forEach((lv,i)=>{ const y=yOf(lv.price); const text=i===0?'GÜÇLÜ DUVAR':i===1?'DUVAR':'BOŞLUK'; const col=i===2?'#ff4f7b':'#10e8a3'; const g=document.createElementNS(ns,'g'); const tx=l+plotW+8; const rect=document.createElementNS(ns,'rect'); rect.setAttribute('x',tx); rect.setAttribute('y',y-12); rect.setAttribute('width',text.length*7+12); rect.setAttribute('height','22'); rect.setAttribute('rx','4'); rect.setAttribute('fill','rgba(2,18,30,.90)'); rect.setAttribute('stroke',col); g.appendChild(rect); const t0=document.createElementNS(ns,'text'); t0.setAttribute('x',tx+6); t0.setAttribute('y',y+3); t0.setAttribute('fill',col); t0.setAttribute('font-size','11'); t0.setAttribute('font-weight','900'); t0.textContent=text; g.appendChild(t0); svg.appendChild(g); });
+  const yOf=p=>t + (high-Number(p))/span*plotH;
+  const xOf=i=>l + (i/Math.max(1,candles.length-1))*plotW;
+  const defs=document.createElementNS(ns,'defs');
+  defs.innerHTML = `
+    <linearGradient id="hmBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#08283d"/><stop offset="100%" stop-color="#02131f"/></linearGradient>
+    <linearGradient id="hmBid" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(24,240,176,.00)"/><stop offset="40%" stop-color="rgba(24,240,176,.35)"/><stop offset="100%" stop-color="rgba(24,240,176,.78)"/></linearGradient>
+    <linearGradient id="hmAsk" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,79,125,.00)"/><stop offset="40%" stop-color="rgba(255,79,125,.35)"/><stop offset="100%" stop-color="rgba(255,79,125,.76)"/></linearGradient>
+    <linearGradient id="hmVoid" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,79,125,.02)"/><stop offset="100%" stop-color="rgba(255,79,125,.26)"/></linearGradient>
+    <filter id="hmGlow" x="-30%" y="-120%" width="160%" height="340%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  `;
+  svg.appendChild(defs);
+  const bg=document.createElementNS(ns,'rect'); bg.setAttribute('x',l); bg.setAttribute('y',t); bg.setAttribute('width',plotW); bg.setAttribute('height',plotH); bg.setAttribute('rx','3'); bg.setAttribute('fill','url(#hmBg)'); svg.appendChild(bg);
+  for(let i=0;i<9;i++){ const y=t+i/8*plotH; const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','rgba(121,176,200,.10)'); svg.appendChild(line); }
+  for(let i=0;i<14;i++){ const x=l+i/13*plotW; const line=document.createElementNS(ns,'line'); line.setAttribute('x1',x); line.setAttribute('x2',x); line.setAttribute('y1',t); line.setAttribute('y2',t+plotH); line.setAttribute('stroke','rgba(121,176,200,.06)'); svg.appendChild(line); }
+  const ranked = (d.levels||[]).slice().filter(x => Number(x.totalUsd||0) > 0).sort((a,b)=>Number(b.relevance||b.totalUsd||0)-Number(a.relevance||a.totalUsd||0)).slice(0,30);
+  ranked.forEach((lv, idx) => {
+    const dens = Math.max(0.08, Math.min(1, Number(lv.density||0)));
+    const y = yOf(lv.price);
+    const bandH = Math.max(4, Math.min(18, (d?.priceRange?.step || 1) / span * plotH * 2.2));
+    const widthPct = lv.kind === 'void' ? 0.34 + dens * 0.22 : 0.56 + dens * 0.40;
+    const width = plotW * Math.min(0.98, widthPct);
+    const x = l + (plotW - width) * (((idx * 37) % 100) / 100) * 0.34;
+    const rect = document.createElementNS(ns,'rect');
+    rect.setAttribute('x',x); rect.setAttribute('y',y-bandH/2); rect.setAttribute('width',width); rect.setAttribute('height',bandH); rect.setAttribute('rx','3');
+    const fill = lv.kind === 'void' ? 'url(#hmVoid)' : (lv.side === 'ask' ? 'url(#hmAsk)' : 'url(#hmBid)');
+    rect.setAttribute('fill',fill);
+    rect.setAttribute('opacity', String(lv.kind === 'void' ? (0.18 + dens*0.12) : (0.16 + dens*0.55)));
+    if (dens > 0.52) rect.setAttribute('filter','url(#hmGlow)');
+    svg.appendChild(rect);
+    if (dens > 0.72 && lv.kind !== 'void') {
+      const core = document.createElementNS(ns,'rect');
+      core.setAttribute('x', x + width*0.05); core.setAttribute('y', y - Math.max(2, bandH*0.22)); core.setAttribute('width', width*0.9); core.setAttribute('height', Math.max(2, bandH*0.44)); core.setAttribute('rx','2');
+      core.setAttribute('fill', lv.side === 'ask' ? 'rgba(255,79,125,.28)' : 'rgba(24,240,176,.34)'); core.setAttribute('opacity','0.8');
+      svg.appendChild(core);
+    }
+  });
+  const candleW = Math.max(2.4, Math.min(7.6, plotW / Math.max(28, candles.length) * 0.7));
+  candles.forEach((c,i)=>{
+    const x=xOf(i), yo=yOf(c.open), yc=yOf(c.close), yh=yOf(c.high), yl=yOf(c.low); const col=c.close>=c.open?'#25eec2':'#ff5a84';
+    const wick=document.createElementNS(ns,'line'); wick.setAttribute('x1',x); wick.setAttribute('x2',x); wick.setAttribute('y1',yh); wick.setAttribute('y2',yl); wick.setAttribute('stroke',col); wick.setAttribute('stroke-width', candleW > 4.6 ? '1.8' : '1.35'); wick.setAttribute('opacity','.96'); svg.appendChild(wick);
+    const body=document.createElementNS(ns,'rect'); body.setAttribute('x',x-candleW/2); body.setAttribute('width', String(candleW)); body.setAttribute('y',Math.min(yo,yc)); body.setAttribute('height',Math.max(3,Math.abs(yc-yo))); body.setAttribute('rx','1.2'); body.setAttribute('fill',col); body.setAttribute('opacity','.99'); svg.appendChild(body);
+  });
+  const current=Number(d.currentPrice||0), magnet=Number(d.metrics?.magnet?.price||0);
+  if(magnet){ const y=yOf(magnet); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW+56); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','#ffb000'); line.setAttribute('stroke-width','1.8'); line.setAttribute('stroke-dasharray','5 4'); svg.appendChild(line); const tag=document.createElementNS(ns,'g'); const rr=document.createElementNS(ns,'rect'); rr.setAttribute('x',l+plotW+8); rr.setAttribute('y',y-12); rr.setAttribute('width','64'); rr.setAttribute('height','22'); rr.setAttribute('rx','5'); rr.setAttribute('fill','rgba(30,20,3,.88)'); rr.setAttribute('stroke','#ffb000'); tag.appendChild(rr); const tt=document.createElementNS(ns,'text'); tt.setAttribute('x',l+plotW+40); tt.setAttribute('y',y+4); tt.setAttribute('text-anchor','middle'); tt.setAttribute('fill','#ffb000'); tt.setAttribute('font-size','11'); tt.setAttribute('font-weight','900'); tt.textContent='MAGNET'; tag.appendChild(tt); svg.appendChild(tag); }
+  if(current){ const y=yOf(current); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','rgba(255,255,255,.42)'); line.setAttribute('stroke-dasharray','2 5'); svg.appendChild(line); const bx=document.createElementNS(ns,'rect'); bx.setAttribute('x',l+plotW+22); bx.setAttribute('y',y-10); bx.setAttribute('width','62'); bx.setAttribute('height','20'); bx.setAttribute('rx','5'); bx.setAttribute('fill','#f5fbff'); svg.appendChild(bx); const tx=document.createElementNS(ns,'text'); tx.setAttribute('x',l+plotW+53); tx.setAttribute('y',y+5); tx.setAttribute('fill','#06131f'); tx.setAttribute('font-size','11'); tx.setAttribute('font-weight','900'); tx.setAttribute('text-anchor','middle'); tx.textContent=fmtPrice(current); svg.appendChild(tx); }
+  const labelRows=[d.walls?.[0], d.walls?.[1], d.voids?.[0]].filter(Boolean);
+  labelRows.forEach((lv,i)=>{ const y=yOf(lv.price); const text=i===0?'GÜÇLÜ DUVAR':i===1?'DUVAR':'BOŞLUK'; const col=i===2?'#ff4f7b':'#10e8a3'; const tx=l+plotW+8; const rect=document.createElementNS(ns,'rect'); rect.setAttribute('x',tx); rect.setAttribute('y',y-12); rect.setAttribute('width',text.length*7+12); rect.setAttribute('height','22'); rect.setAttribute('rx','4'); rect.setAttribute('fill','rgba(2,18,30,.92)'); rect.setAttribute('stroke',col); svg.appendChild(rect); const t0=document.createElementNS(ns,'text'); t0.setAttribute('x',tx+6); t0.setAttribute('y',y+3); t0.setAttribute('fill',col); t0.setAttribute('font-size','11'); t0.setAttribute('font-weight','900'); t0.textContent=text; svg.appendChild(t0); });
   for(let i=0;i<5;i++){ const p=low+i/4*span; const yy=yOf(p); const tx=document.createElementNS(ns,'text'); tx.setAttribute('x',l+plotW+72); tx.setAttribute('y',yy+4); tx.setAttribute('fill','#bad2dc'); tx.setAttribute('font-size','11'); tx.setAttribute('text-anchor','end'); tx.textContent=fmtPrice(p); svg.appendChild(tx); }
   return svg;
 }

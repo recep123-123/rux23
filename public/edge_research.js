@@ -1,7 +1,7 @@
 /* RUx — Edge Research Dashboard Consolidation ekranı */
-import { el, State, fetchMarket } from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
-import { ICN, statCard, card, pageHead, tag, barbar, progress } from './components.js?v=0.75.11-heatmap-tf-recalibration-20260524';
-import { makeEdgeResearchDashboardReport } from './rux_edge_dashboard.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN, statCard, card, pageHead, tag, barbar, progress } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { makeEdgeResearchDashboardReport } from './rux_edge_dashboard.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 function fmtR(n, d = 2) {
   const v = Number(n || 0);
@@ -144,7 +144,7 @@ export async function renderEdgeResearch(host) {
   const tf = State.tf || '4h';
   host.appendChild(pageHead({
     title: 'EDGE RESEARCH DASHBOARD',
-    subtitle: 'RUx v0.75.11-heatmap-tf-recalibration-20260524 setup matrisi, kural karşılaştırma, OOS, Monte Carlo, data health, Binance live wiring, replay ve user fidelity çıktılarını tek araştırma komuta panelinde birleştirir.',
+    subtitle: 'RUx v0.75.12-heatmap-premium-visual-pass-20260524 setup matrisi, kural karşılaştırma, OOS, Monte Carlo, data health, Binance live wiring, replay ve user fidelity çıktılarını tek araştırma komuta panelinde birleştirir.',
     actions: [
       el('div', { class: 'select' }, symbol.replace('USDT','/USDT')),
       el('div', { class: 'select' }, tf),

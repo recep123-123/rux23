@@ -1,6 +1,6 @@
 /* RUx — Analiz modülleri: volatilite, korelasyon, döngü, akış, on-chain */
-import { State, el, fetchMarket, toast, atr, ema, rsi } from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, sparkline } from './components.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { State, el, fetchMarket, toast, atr, ema, rsi } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, sparkline } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 function clamp(v, a=0, b=100) { return Math.min(b, Math.max(a, v)); }
 

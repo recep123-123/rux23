@@ -1,7 +1,7 @@
 /* RUx — Katı PA Kuralları (image 19) */
-import { State, fetchMarket, el } from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
-import { ICN, statCard, card, pageHead, checklist, ringGauge } from './components.js?v=0.75.11-heatmap-tf-recalibration-20260524';
-import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { State, fetchMarket, el } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN, statCard, card, pageHead, checklist, ringGauge } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 export async function renderKatiPa(host) {
   host.innerHTML = '';
