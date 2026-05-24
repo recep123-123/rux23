@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];

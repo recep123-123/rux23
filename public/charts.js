@@ -1,5 +1,5 @@
 /* RUx — Chart helpers (Lightweight Charts) */
-import { fmtPrice, ema } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { fmtPrice, ema } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 const _LWC = () => (window.LightweightCharts || null);
 

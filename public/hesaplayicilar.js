@@ -1,6 +1,6 @@
 /* RUx — Hesaplayıcılar (real working calculators panel) */
-import { State, el, toast, fetchMarket } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { State, el, toast, fetchMarket } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 function num(v, def = 0) { const n = parseFloat(v); return isNaN(n) ? def : n; }
 function fmtUsd(n) {

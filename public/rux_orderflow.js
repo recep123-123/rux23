@@ -1,7 +1,7 @@
 /* RUx — Order Flow / CVD Kaynak Şeffaflığı */
-import { el, fetchCVD, fetchLiquidity, fetchFutures } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { card, barbar, checklist, tag } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { getOrderflowScoreMode, orderflowScoreModeLabel } from './rux_settings.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { el, fetchCVD, fetchLiquidity, fetchFutures } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { card, barbar, checklist, tag } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { getOrderflowScoreMode, orderflowScoreModeLabel } from './rux_settings.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 function num(v, d = null) {
   const n = Number(v);

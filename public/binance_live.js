@@ -1,7 +1,7 @@
 /* RUx — Exchange Data Router Panel */
-import { el, State, fmtPrice, fmtTime } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { fetchBinanceLive } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { buildUnifiedMarketData } from './rux_data_adapters.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { el, State, fmtPrice, fmtTime } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { fetchBinanceLive } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { buildUnifiedMarketData } from './rux_data_adapters.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 function pct(v, d = 3) { return v === null || v === undefined || !Number.isFinite(Number(v)) ? '—' : Number(v).toFixed(d) + '%'; }
 function num(v) { return Number.isFinite(Number(v)) ? Number(v) : null; }

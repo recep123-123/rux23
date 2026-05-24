@@ -1,10 +1,10 @@
 /* RUx — Coin Pano Chart Entry & 2000 Candle Fix */
-import { State, fetchMarket, fetchNews, el, fmtPrice, fmtPct, ema, toast } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { analyzeLiveMarketSignal, makeRuxDecisionSnapshot, manualRiskSuggestion, simulateSignalTracking, statusClass } from './rux_core.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { ICN, statCard, card, pageHead, sparkline } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { makeCandleChart, normalizeCandleInput } from './charts.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { subscribeLive, unsubscribeLive, isWebSocketAvailable } from './rux_ws.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { triggerAddAlertFlow, addDashboardWidget, addToWatchlist, getAlerts, getDashboardWidgets } from './rux_actions.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { State, fetchMarket, fetchNews, el, fmtPrice, fmtPct, ema, toast } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { analyzeLiveMarketSignal, makeRuxDecisionSnapshot, manualRiskSuggestion, simulateSignalTracking, statusClass } from './rux_core.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { ICN, statCard, card, pageHead, sparkline } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { makeCandleChart, normalizeCandleInput } from './charts.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { subscribeLive, unsubscribeLive, isWebSocketAvailable } from './rux_ws.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { triggerAddAlertFlow, addDashboardWidget, addToWatchlist, getAlerts, getDashboardWidgets } from './rux_actions.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 export async function renderCoinPano(host, params) {
   host.innerHTML = '';

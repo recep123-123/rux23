@@ -1,7 +1,7 @@
 /* RUx — Alarm Yönetimi / Local manual alert center */
-import { el, toast } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { ICN, statCard, pageHead, card } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { getAlerts, addAlert, removeAlert, toggleAlert, getWatchlist, addToWatchlist, getNotes, removeNote, formatLocalTime } from './rux_actions.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { el, toast } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { ICN, statCard, pageHead, card } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { getAlerts, addAlert, removeAlert, toggleAlert, getWatchlist, addToWatchlist, getNotes, removeNote, formatLocalTime } from './rux_actions.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 export async function renderAlarm(host, params = {}) {
   host.innerHTML = '';

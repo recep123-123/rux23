@@ -1,6 +1,6 @@
 /* RUx — API & Ayarlar ekranı */
-import { el, testApiEndpoint, toast } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { el, testApiEndpoint, toast } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 import {
   RUX_SETTING_SCHEMA,
   getRuxSettings,
@@ -10,7 +10,7 @@ import {
   settingsCompletionScore,
   exportSafeRuxSettings,
   getTelegramSourceList
-} from './rux_settings.js?v=0.75.9-heatmap-premium-rework-20260524';
+} from './rux_settings.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 const SERVICE_TESTS = [
   { name: 'Market Data', category: 'Piyasa', path: '/api/market?symbol=BTCUSDT&tf=4h&limit=80', required: true },

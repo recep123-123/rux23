@@ -1,74 +1,74 @@
 /* RUx — Pages registry (sayfa tamamlama) */
-import { renderKokpit } from './kokpit.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderPiyasa } from './piyasa.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderSmartMoney } from './smart_money.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderPriceAction } from './price_action.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderSmcRadar } from './smc_radar.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderBugun } from './bugun.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderCoinPano } from './coin_pano.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderSinyal } from './sinyal.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderSinyalDetay } from './sinyal_detay.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderSinyalGunlugu } from './sinyal_gunlugu.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderTest } from './test.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderSetupMatrisi } from './setup_matrisi.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderKuralKarsilastirma } from './kural_karsilastirma.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderUserFidelity } from './user_fidelity.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderSignalReplay } from './signal_replay.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderIstatistik } from './istatistik.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderKalibrasyon } from './kalibrasyon.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderOptimizer } from './optimizer.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderWalkforward } from './walkforward.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderMontecarlo } from './montecarlo.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderKatiPa } from './kati_pa.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderOteGiris } from './ote_giris.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderRvol } from './rvol.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderAralikSapmasi } from './aralik_sapmasi.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderRisk } from './risk.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderAtr } from './atr.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderKuralSetleri } from './kural_setleri.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderStratejiUretici } from './strateji_uretici.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderStratejiKarnesi } from './strateji_karnesi.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderNoTradeTest } from './no_trade_test.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderEmirGecmisi } from './emir_gecmisi.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderAcikPozisyon } from './acik_pozisyon.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderPortfoyIsi } from './portfoy_isi.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderHaber } from './haber.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderSistem } from './sistem.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderWebhookApi } from './webhook_api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderOrderflowKaynak } from './orderflow_kaynak.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderDataKaynakSagligi } from './data_kaynak_sagligi.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderDataAdapterDiagnostics } from './data_adapter_diagnostics.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderBinanceLive } from './binance_live.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderAlarm } from './alarm.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderEdgeResearch } from './edge_research.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderGenericPage } from './generic.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { renderKokpit } from './kokpit.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderPiyasa } from './piyasa.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderSmartMoney } from './smart_money.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderPriceAction } from './price_action.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderSmcRadar } from './smc_radar.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderBugun } from './bugun.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderCoinPano } from './coin_pano.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderSinyal } from './sinyal.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderSinyalDetay } from './sinyal_detay.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderSinyalGunlugu } from './sinyal_gunlugu.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderTest } from './test.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderSetupMatrisi } from './setup_matrisi.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderKuralKarsilastirma } from './kural_karsilastirma.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderUserFidelity } from './user_fidelity.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderSignalReplay } from './signal_replay.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderIstatistik } from './istatistik.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderKalibrasyon } from './kalibrasyon.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderOptimizer } from './optimizer.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderWalkforward } from './walkforward.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderMontecarlo } from './montecarlo.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderKatiPa } from './kati_pa.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderOteGiris } from './ote_giris.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderRvol } from './rvol.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderAralikSapmasi } from './aralik_sapmasi.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderRisk } from './risk.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderAtr } from './atr.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderKuralSetleri } from './kural_setleri.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderStratejiUretici } from './strateji_uretici.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderStratejiKarnesi } from './strateji_karnesi.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderNoTradeTest } from './no_trade_test.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderEmirGecmisi } from './emir_gecmisi.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderAcikPozisyon } from './acik_pozisyon.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderPortfoyIsi } from './portfoy_isi.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderHaber } from './haber.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderSistem } from './sistem.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderWebhookApi } from './webhook_api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderOrderflowKaynak } from './orderflow_kaynak.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderDataKaynakSagligi } from './data_kaynak_sagligi.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderDataAdapterDiagnostics } from './data_adapter_diagnostics.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderBinanceLive } from './binance_live.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderAlarm } from './alarm.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderEdgeResearch } from './edge_research.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderGenericPage } from './generic.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 /* ── v0.49.4 yeni modüller ── */
-import { renderPozisyonBuyuklugu } from './pozisyon_buyuklugu.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderHesaplayicilar } from './hesaplayicilar.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { renderDonusturuculer } from './donusturuculer.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { renderPozisyonBuyuklugu } from './pozisyon_buyuklugu.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderHesaplayicilar } from './hesaplayicilar.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { renderDonusturuculer } from './donusturuculer.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 import {
   renderStop, renderDrawdown, renderPortfoyRisk,
   renderKorelasyonIzleme, renderSermayeKoruma, renderPortfoyBt
-} from './risk_modules.js?v=0.75.9-heatmap-premium-rework-20260524';
+} from './risk_modules.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 import {
   renderVolatilite, renderAnalizKorelasyon,
   renderPiyasaDongu, renderAkisAnalizi, renderAnalizZincir
-} from './analiz_modules.js?v=0.75.9-heatmap-premium-rework-20260524';
+} from './analiz_modules.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 import {
   renderPiyasaHaritasi, renderSektorHaritasi, renderLikidasyonHaritasi,
   renderIsiHaritasi, renderGlobalEndeksler, renderMakroTakvim
-} from './piyasa_modules.js?v=0.75.9-heatmap-premium-rework-20260524';
+} from './piyasa_modules.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 import {
   renderCoinPerf, renderCoinIliski, renderCoinLikid,
   renderCoinHeat, renderCoinRapor
-} from './coin_modules.js?v=0.75.9-heatmap-premium-rework-20260524';
+} from './coin_modules.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 import {
   renderLikiditeAnalizi, renderLikiditeHaritasi, renderHeatmapAnaliz
-} from './likidite_modules.js?v=0.75.9-heatmap-premium-rework-20260524';
+} from './likidite_modules.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 import {
   renderDerivsOI, renderDerivsFunding, renderDerivsCVD, renderDerivsLiq, renderDerivsHeatmap
-} from './derivs.js?v=0.75.9-heatmap-premium-rework-20260524';
+} from './derivs.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 const REGISTRY = {
   /* ── temel ── */

@@ -1,7 +1,7 @@
 /* RUx — Rule Comparison & Optimization Engine
    Aynı sinyal seti üzerinde trade-management, TP dağılımı, time-stop,
    no-trade sertliği, confirmation ağırlığı ve risk modu varyantlarını karşılaştırır. */
-import { clamp, round } from './rux_core.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { clamp, round } from './rux_core.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 function num(v, fallback = 0) {
   const n = Number(v);

@@ -1,8 +1,8 @@
 /* RUx — Açık Pozisyonlar / Coin bazlı manuel takip motoru */
-import { el, fmtPrice, fetchMarket } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { ICN, statCard, card, pageHead, coinPill, donut, barbar } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { canvasLineChart } from './charts.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { makeOpenPositionsReport } from './rux_core.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { el, fmtPrice, fetchMarket } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { ICN, statCard, card, pageHead, coinPill, donut, barbar } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { canvasLineChart } from './charts.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { makeOpenPositionsReport } from './rux_core.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 function money(n) {
   const v = Number(n);

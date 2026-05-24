@@ -1,7 +1,7 @@
 /* RUx — RVOL / Hacim-Fiyat (image 17) */
-import { State, fetchMarket, el } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { ICN, statCard, card, pageHead, coinPill, barbar } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
-import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { State, fetchMarket, el } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { ICN, statCard, card, pageHead, coinPill, barbar } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.10-heatmap-fidelity-pass-20260524';
 
 export async function renderRvol(host) {
   host.innerHTML = '';
