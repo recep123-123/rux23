@@ -1,7 +1,7 @@
 /* RUx — Aralık Sapması (image 20) */
-import { State, el } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { ICN, statCard, card, pageHead, halfGauge, coinPill } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { canvasLineChart } from './charts.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { State, el } from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { ICN, statCard, card, pageHead, halfGauge, coinPill } from './components.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { canvasLineChart } from './charts.js?v=0.75.11-heatmap-tf-recalibration-20260524';
 
 export async function renderAralikSapmasi(host) {
   host.innerHTML = '';

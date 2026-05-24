@@ -3441,15 +3441,24 @@ HANDLERS['derivs'] = (() => {
 
   // 5) LIKIDITE HEATMAP — CANLI ORDER BOOK + TÜREV ANALİTİK.
   // Ücretsiz public borsa API'leri: Binance USD-M ana kaynak, Bybit/OKX çapraz kaynak.
+
   async function getHeatmap(symbol, period) {
     const out = {
       type: 'heatmap', symbol, modeled: false, levels: [], walls: [], voids: [], ladder: [], candles: [],
       venues: [], flow: [], alerts: [], dataStatus: [], errors: [], source: 'none', updatedAt: Date.now()
     };
-    const periodMap = { '5m':'5m', '15m':'15m', '1h':'1h', '4h':'4h', '1d':'1d', '1w':'1w' };
-    const interval = periodMap[period] || '15m';
-    const bybitInterval = ({ '5m':'5', '15m':'15', '1h':'60', '4h':'240', '1d':'D', '1w':'W' })[period] || '15';
-    const okxBar = ({ '5m':'5m', '15m':'15m', '1h':'1H', '4h':'4H', '1d':'1D', '1w':'1W' })[period] || '15m';
+    const tf = ({ '5m':'5m', '15m':'15m', '1h':'1h', '4h':'4h', '1d':'1d', '1w':'1w' })[String(period || '')] || '15m';
+    const interval = tf;
+    const okxBar = ({ '5m':'5m', '15m':'15m', '1h':'1H', '4h':'4H', '1d':'1D', '1w':'1W' })[tf] || '15m';
+    const profileMap = {
+      '5m':  { label:'5 dk', visibleCandles:72, fetchCandles:180, rangeLookback:48, rangePct:0.018, atrMult:3.2, stepMult:1, nearFocus:320, wallThreshold:0.82, voidThreshold:0.24, momentumLookback:18, retainNearBands:10 },
+      '15m': { label:'15 dk', visibleCandles:72, fetchCandles:180, rangeLookback:60, rangePct:0.028, atrMult:3.8, stepMult:1, nearFocus:240, wallThreshold:0.78, voidThreshold:0.22, momentumLookback:18, retainNearBands:11 },
+      '1h':  { label:'1 saat', visibleCandles:84, fetchCandles:200, rangeLookback:72, rangePct:0.050, atrMult:4.5, stepMult:2, nearFocus:170, wallThreshold:0.74, voidThreshold:0.19, momentumLookback:24, retainNearBands:12 },
+      '4h':  { label:'4 saat', visibleCandles:84, fetchCandles:220, rangeLookback:84, rangePct:0.085, atrMult:5.2, stepMult:4, nearFocus:110, wallThreshold:0.70, voidThreshold:0.17, momentumLookback:28, retainNearBands:13 },
+      '1d':  { label:'1 gün', visibleCandles:76, fetchCandles:160, rangeLookback:64, rangePct:0.140, atrMult:5.8, stepMult:8, nearFocus:68, wallThreshold:0.66, voidThreshold:0.14, momentumLookback:16, retainNearBands:14 },
+      '1w':  { label:'1 hafta', visibleCandles:52, fetchCandles:120, rangeLookback:40, rangePct:0.260, atrMult:6.2, stepMult:16, nearFocus:40, wallThreshold:0.62, voidThreshold:0.12, momentumLookback:8, retainNearBands:16 }
+    };
+    const profile = profileMap[tf] || profileMap['15m'];
     const okxId = okxInst(symbol);
     const base = symbol.replace(/USDT$/, '');
     const okxSpot = `${base}-USDT`;
@@ -3473,17 +3482,23 @@ HANDLERS['derivs'] = (() => {
       return 0.001;
     }
     function roundStep(x, step) { return Math.round(x / step) * step; }
-    function fmtRange(mid, step) { return `${Math.round((mid - step / 2) * 100) / 100} - ${Math.round((mid + step / 2) * 100) / 100}`; }
+    function fmtRange(mid, step) {
+      const a = Math.round((mid - step / 2) * 100) / 100;
+      const b = Math.round((mid + step / 2) * 100) / 100;
+      return `${a} - ${b}`;
+    }
+    function avgOf(a = []) { return a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0; }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
     const [bnDepth, bnTicker, bnKlines, byDepth, byTicker, okDepth, okTicker, okCandles, okInst] = await Promise.all([
       fetchJson(`${BINANCE}/fapi/v1/depth?symbol=${symbol}&limit=1000`, 9000),
       fetchJson(`${BINANCE}/fapi/v1/ticker/24hr?symbol=${symbol}`, 7000),
-      fetchJson(`${BINANCE}/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=120`, 9000),
+      fetchJson(`${BINANCE}/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=${profile.fetchCandles}`, 9000),
       fetchJson(`${BYBIT}/v5/market/orderbook?category=linear&symbol=${symbol}&limit=200`, 8000),
       fetchJson(`${BYBIT}/v5/market/tickers?category=linear&symbol=${symbol}`, 7000),
       fetchJson(`${OKX}/api/v5/market/books?instId=${encodeURIComponent(okxId)}&sz=400`, 8000),
       fetchJson(`${OKX}/api/v5/market/ticker?instId=${encodeURIComponent(okxId)}`, 7000),
-      fetchJson(`${OKX}/api/v5/market/candles?instId=${encodeURIComponent(okxSpot)}&bar=${okxBar}&limit=120`, 8000),
+      fetchJson(`${OKX}/api/v5/market/candles?instId=${encodeURIComponent(okxSpot)}&bar=${okxBar}&limit=${profile.fetchCandles}`, 8000),
       fetchJson(`${OKX}/api/v5/public/instruments?instType=SWAP&instId=${encodeURIComponent(okxId)}`, 8000)
     ]);
 
@@ -3514,10 +3529,14 @@ HANDLERS['derivs'] = (() => {
       allBids.push(...x.bids); allAsks.push(...x.asks); addStatus('OKX', 'live', x.bids.length + x.asks.length, 'swap books');
     } else { out.errors.push('okx depth: ' + (okDepth?._err || 'veri yok')); addStatus('OKX', 'offline', 0, okDepth?._err || 'veri yok'); }
 
-    let rawCandles = Array.isArray(bnKlines) ? bnKlines.map(c => ({ time:n(c[0]), open:n(c[1]), high:n(c[2]), low:n(c[3]), close:n(c[4]), volume:n(c[5]) })) : [];
+    let rawCandles = Array.isArray(bnKlines)
+      ? bnKlines.map(c => ({ time:n(c[0]), open:n(c[1]), high:n(c[2]), low:n(c[3]), close:n(c[4]), volume:n(c[5]) }))
+      : [];
     if (!rawCandles.length && Array.isArray(okCandles?.data)) rawCandles = okCandles.data.map(c => ({ time:n(c[0]), open:n(c[1]), high:n(c[2]), low:n(c[3]), close:n(c[4]), volume:n(c[5]) })).reverse();
     if (!price && rawCandles.length) price = rawCandles.at(-1).close;
-    out.candles = rawCandles.slice(-96);
+    out.candles = rawCandles.slice(-Math.max(profile.visibleCandles, 72));
+    out.chartWindow = profile.visibleCandles;
+    out.windowLabel = profile.label;
 
     if (!price || (!allBids.length && !allAsks.length)) {
       out.source = 'none';
@@ -3526,15 +3545,29 @@ HANDLERS['derivs'] = (() => {
       return out;
     }
 
-    const step = stepForPrice(price);
-    const lowFromCandles = out.candles.length ? Math.min(...out.candles.map(c => c.low)) : price * 0.988;
-    const highFromCandles = out.candles.length ? Math.max(...out.candles.map(c => c.high)) : price * 1.012;
-    const low = Math.min(price * 0.985, lowFromCandles * 0.998);
-    const high = Math.max(price * 1.015, highFromCandles * 1.002);
+    const candleView = out.candles.slice(-Math.max(profile.rangeLookback, profile.momentumLookback + 4));
+    const trueRanges = candleView.map((c, i) => {
+      const prevClose = i ? candleView[i - 1].close : c.close;
+      return Math.max(Math.abs(c.high - c.low), Math.abs(c.high - prevClose), Math.abs(c.low - prevClose));
+    });
+    const atr = avgOf(trueRanges.slice(-Math.min(14, trueRanges.length))) || price * profile.rangePct * 0.35;
+    const rangePad = Math.max(price * profile.rangePct, atr * profile.atrMult, price * 0.0035 * profile.stepMult);
+    const lowFromCandles = candleView.length ? Math.min(...candleView.map(c => c.low)) : price - rangePad * 0.8;
+    const highFromCandles = candleView.length ? Math.max(...candleView.map(c => c.high)) : price + rangePad * 0.8;
+    let low = Math.min(price - rangePad, lowFromCandles - rangePad * 0.22);
+    let high = Math.max(price + rangePad, highFromCandles + rangePad * 0.22);
+    if (!(high > low)) { low = price * 0.985; high = price * 1.015; }
+
+    const baseStep = stepForPrice(price);
+    let step = Math.max(baseStep, baseStep * profile.stepMult);
+    let span = high - low;
+    while (span / step > 96) step *= 2;
+    while (span / step < 26 && step > baseStep) step = Math.max(baseStep, step / 2);
+
     const bands = new Map();
     function bandOf(p) { return roundStep(p, step); }
     for (let p0 = roundStep(low, step); p0 <= high + step; p0 += step) {
-      bands.set(Number(p0.toFixed(8)), { price: Number(p0.toFixed(8)), bidUsd: 0, askUsd: 0, totalUsd: 0, venues: {} });
+      bands.set(Number(p0.toFixed(8)), { price: Number(p0.toFixed(8)), bidUsd: 0, askUsd: 0, totalUsd: 0, venues: {}, bandTouches: 0 });
     }
     [...allBids, ...allAsks].forEach(row => {
       if (row.price < low || row.price > high) return;
@@ -3544,39 +3577,61 @@ HANDLERS['derivs'] = (() => {
       b.totalUsd += row.usd;
       b.venues[row.venue] = (b.venues[row.venue] || 0) + row.usd;
     });
-    const levels = Array.from(bands.values()).sort((a,b)=>b.price-a.price).filter(x => x.totalUsd > 0 || Math.abs(x.price - price) <= step * 12);
+    candleView.forEach(c => {
+      const key = Number(bandOf(c.close).toFixed(8));
+      const b = bands.get(key);
+      if (b) b.bandTouches += 1;
+    });
+
+    const levels = Array.from(bands.values()).sort((a, b) => b.price - a.price).filter(x => x.totalUsd > 0 || Math.abs(x.price - price) <= step * profile.retainNearBands);
     const maxLiq = Math.max(...levels.map(x => x.totalUsd), 1);
+    const avg = levels.length ? levels.reduce((s, x) => s + x.totalUsd, 0) / levels.length : 0;
+    const avgTouch = levels.length ? levels.reduce((s, x) => s + x.bandTouches, 0) / levels.length : 0;
+
     levels.forEach(x => {
       x.density = x.totalUsd / maxLiq;
       x.side = x.askUsd > x.bidUsd ? 'ask' : 'bid';
       x.range = fmtRange(x.price, step);
-      const venueEntries = Object.entries(x.venues || {}).sort((a,b)=>b[1]-a[1]);
+      const venueEntries = Object.entries(x.venues || {}).sort((a, b) => b[1] - a[1]);
       x.mainVenue = venueEntries[0]?.[0] || '—';
-      x.kind = x.density >= .72 ? 'wall' : x.density <= .16 ? 'void' : 'normal';
+      x.distPct = Math.abs(x.price - price) / price * 100;
+      x.touchScore = avgTouch ? x.bandTouches / avgTouch : 0;
+      const nearScore = x.totalUsd / (1 + x.distPct * profile.nearFocus);
+      const swingBoost = 1 + clamp(x.touchScore, 0, 4) * (tf === '1d' || tf === '1w' ? 0.16 : 0.07);
+      x.relevance = (tf === '5m' || tf === '15m')
+        ? nearScore * (1 + x.density * 0.55)
+        : (tf === '1h' || tf === '4h')
+          ? ((nearScore * 0.62) + (x.totalUsd * 0.38)) * swingBoost
+          : ((nearScore * 0.38) + (x.totalUsd * 0.62)) * swingBoost;
+      x.kind = x.density >= profile.wallThreshold ? 'wall' : x.density <= profile.voidThreshold ? 'void' : 'normal';
+      x.voidScore = avg ? ((1 - Math.min(1, x.totalUsd / Math.max(avg, 1))) * 100) / (1 + x.distPct * (tf === '1w' ? 9 : 18)) : 0;
     });
 
-    const totalBidUsd = levels.reduce((s,x)=>s+x.bidUsd,0);
-    const totalAskUsd = levels.reduce((s,x)=>s+x.askUsd,0);
+    const totalBidUsd = levels.reduce((s, x) => s + x.bidUsd, 0);
+    const totalAskUsd = levels.reduce((s, x) => s + x.askUsd, 0);
     const totalLiquidityUsd = totalBidUsd + totalAskUsd;
     const imbalancePct = totalLiquidityUsd ? ((totalBidUsd - totalAskUsd) / totalLiquidityUsd) * 100 : 0;
-    const walls = levels.filter(x => x.totalUsd > 0).sort((a,b)=>b.totalUsd-a.totalUsd).slice(0, 8);
-    const avg = levels.length ? levels.reduce((s,x)=>s+x.totalUsd,0)/levels.length : 0;
-    const voids = levels.filter(x => x.totalUsd < avg * 0.45).sort((a,b)=>Math.abs(a.price-price)-Math.abs(b.price-price)).slice(0, 8);
+    const walls = levels.filter(x => x.totalUsd > 0).sort((a, b) => b.relevance - a.relevance).slice(0, 8);
+    const voids = levels.filter(x => x.totalUsd <= avg * (tf === '1w' ? 0.35 : 0.45)).sort((a, b) => b.voidScore - a.voidScore).slice(0, 8);
     const strongestWall = walls[0] || null;
     const liquidityGap = voids[0] || null;
-    const magnet = walls.slice().sort((a,b)=>(b.totalUsd/(1+Math.abs(b.price-price)/price*75))-(a.totalUsd/(1+Math.abs(a.price-price)/price*75)))[0] || strongestWall;
+    const magnet = walls.slice().sort((a, b) => ((b.totalUsd * (1 + b.touchScore * 0.08)) / (1 + b.distPct * profile.nearFocus * 0.35)) - ((a.totalUsd * (1 + a.touchScore * 0.08)) / (1 + a.distPct * profile.nearFocus * 0.35)))[0] || strongestWall;
 
     const venuesMap = new Map();
-    [...allBids, ...allAsks].forEach(r => venuesMap.set(r.venue, (venuesMap.get(r.venue)||0)+r.usd));
-    const venues = Array.from(venuesMap.entries()).map(([name,value]) => ({ name, value })).sort((a,b)=>b.value-a.value);
-    const topBook = [...allBids.slice(0,6), ...allAsks.slice(0,6)].sort((a,b)=>Math.abs(a.price-price)-Math.abs(b.price-price));
-    const ladder = levels.slice().sort((a,b)=>Math.abs(a.price-price)-Math.abs(b.price-price)).slice(0, 8).map(x => ({ price:x.price, bidUsd:x.bidUsd, askUsd:x.askUsd, totalUsd:x.totalUsd }));
+    [...allBids, ...allAsks].forEach(r => venuesMap.set(r.venue, (venuesMap.get(r.venue) || 0) + r.usd));
+    const venues = Array.from(venuesMap.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+    const ladder = levels.slice().sort((a, b) => Math.abs(a.price - price) - Math.abs(b.price - price)).slice(0, 8).map(x => ({ price:x.price, bidUsd:x.bidUsd, askUsd:x.askUsd, totalUsd:x.totalUsd }));
 
     const closes = out.candles.map(c => c.close);
-    const last = closes.at(-1) || price; const prev = closes.at(-Math.min(24, closes.length)) || closes[0] || last;
+    const last = closes.at(-1) || price;
+    const prev = closes.at(-Math.min(profile.momentumLookback, closes.length)) || closes[0] || last;
     const momentumPct = prev ? ((last - prev) / prev) * 100 : 0;
+    const windowLow = candleView.length ? Math.min(...candleView.map(c => c.low)) : price;
+    const windowHigh = candleView.length ? Math.max(...candleView.map(c => c.high)) : price;
+    const windowRangePct = price ? ((windowHigh - windowLow) / price) * 100 : 0;
     const wallAddPct = avg ? ((strongestWall?.totalUsd || 0) / avg - 1) * 100 : 0;
     const voidPct = avg ? ((avg - (liquidityGap?.totalUsd || 0)) / avg) * 100 : 0;
+    const rangeUtilPct = price ? (((strongestWall?.price || price) - price) / price) * 100 : 0;
 
     out.currentPrice = price;
     out.priceChg24hPct = priceChg24hPct;
@@ -3591,38 +3646,40 @@ HANDLERS['derivs'] = (() => {
       strongestWall: strongestWall ? { price:strongestWall.price, range:strongestWall.range, liquidityUsd:strongestWall.totalUsd, side:strongestWall.side, mainVenue:strongestWall.mainVenue } : null,
       liquidityGap: liquidityGap ? { price:liquidityGap.price, range:liquidityGap.range, liquidityUsd:liquidityGap.totalUsd, side:liquidityGap.side } : null,
       magnet: magnet ? { price:magnet.price, liquidityUsd:magnet.totalUsd, distancePct: ((magnet.price-price)/price)*100 } : null,
-      momentumPct, wallAddPct, voidPct
+      momentumPct, wallAddPct, voidPct, windowRangePct, windowReturnPct: momentumPct, rangeUtilPct
     };
     out.flow = [
-      { label:'Toplam Likidite', valuePct: priceChg24hPct, spark: closes.slice(-24) },
-      { label:'Duvar Yoğunluğu', valuePct: wallAddPct, spark: levels.slice(0,24).map(x=>x.totalUsd) },
-      { label:'Boşluk Baskısı', valuePct: -voidPct, spark: levels.slice(-24).map(x=>x.totalUsd) },
-      { label:'İmbalance Değişimi', valuePct: imbalancePct, spark: levels.map(x=>x.bidUsd-x.askUsd).slice(-24) },
-      { label:'Volatilite Koridoru', valuePct: momentumPct, spark: closes.slice(-24) }
+      { label:'Toplam Likidite', valuePct: momentumPct, spark: closes.slice(-Math.max(16, profile.visibleCandles)) },
+      { label:'Duvar Yoğunluğu', valuePct: wallAddPct, spark: levels.slice(0, 24).map(x => x.totalUsd) },
+      { label:'Boşluk Baskısı', valuePct: -voidPct, spark: levels.slice(-24).map(x => x.totalUsd) },
+      { label:'İmbalance Değişimi', valuePct: imbalancePct, spark: levels.map(x => x.bidUsd - x.askUsd).slice(-24) },
+      { label:'Volatilite Koridoru', valuePct: windowRangePct, spark: candleView.map(c => c.high - c.low).slice(-24) }
     ];
+
     const absImb = Math.abs(imbalancePct);
     out.regime = absImb >= 18 ? (imbalancePct > 0 ? 'Bid Savunması' : 'Satıcı Baskısı') : (wallAddPct > 20 ? 'Likidite Trend' : 'Dengeli Yoğunluk');
     out.liquidityRegime = wallAddPct > 30 ? 'Trend' : absImb > 25 ? 'İmbalance' : 'Dengeli';
-    out.riskScore = Math.max(0, Math.min(100, Math.round(52 + (wallAddPct/3) + (voidPct/4) + absImb/2)));
+    out.riskScore = Math.max(0, Math.min(100, Math.round(48 + (wallAddPct / 3.4) + (voidPct / 4.2) + (absImb / 1.9) + Math.min(18, windowRangePct / 2.6))));
     out.comments = [
-      magnet ? `Fiyat mıknatısı ${Math.round(magnet.price*100)/100} seviyesine yakın; en güçlü çekim bölgesi izleniyor.` : 'Mıknatıs seviyesi için yeterli duvar yok.',
-      strongestWall ? `${strongestWall.range} aralığında güçlü likidite duvarı mevcut.` : 'Belirgin likidite duvarı zayıf.',
+      magnet ? `${profile.label} rejiminde fiyat mıknatısı ${Math.round(magnet.price * 100) / 100}; en güçlü çekim bölgesi izleniyor.` : `${profile.label} rejiminde güçlü mıknatıs seviyesi sınırlı.`,
+      strongestWall ? `${strongestWall.range} aralığında ${strongestWall.mainVenue} ağırlıklı güçlü likidite duvarı mevcut.` : 'Belirgin likidite duvarı zayıf.',
       liquidityGap ? `${liquidityGap.range} aralığında likidite boşluğu / hızlı geçiş bölgesi var.` : 'Belirgin likidite boşluğu sınırlı.',
       imbalancePct < -10 ? 'Ask tarafı baskısı güçleniyor; satıcı yoğunluğu dikkat istiyor.' : imbalancePct > 10 ? 'Bid tarafı savunması güçleniyor; alıcı duvarları öne çıkıyor.' : 'Bid-ask dengesi nötr banda yakın.',
-      Math.abs(momentumPct) > 0.8 ? 'Kısa vade volatilite artabilir; yürütme bölgeleri hassas.' : 'Kısa vade akış görece kontrollü.'
+      Math.abs(momentumPct) > (tf === '1w' ? 3.0 : tf === '1d' ? 1.8 : 0.8) ? `${profile.label} penceresinde volatilite belirgin; yürütme bölgeleri hassas.` : `${profile.label} penceresinde akış görece kontrollü.`
     ];
     out.alerts = [
-      { type:'WALL PULLED', level: strongestWall?.range || '—', amountUsd: strongestWall ? strongestWall.totalUsd * .28 : 0, tone:'pos' },
-      { type:'WALL ADDED', level: walls[1]?.range || strongestWall?.range || '—', amountUsd: (walls[1]?.totalUsd || strongestWall?.totalUsd || 0) * .22, tone:'pos' },
+      { type:'WALL PULLED', level: strongestWall?.range || '—', amountUsd: strongestWall ? strongestWall.totalUsd * (tf === '1w' ? 0.12 : 0.22) : 0, tone:'pos' },
+      { type:'WALL ADDED', level: walls[1]?.range || strongestWall?.range || '—', amountUsd: (walls[1]?.totalUsd || strongestWall?.totalUsd || 0) * (tf === '1w' ? 0.10 : 0.18), tone:'pos' },
       { type:'VOID BREAK', level: liquidityGap?.range || '—', amountUsd: liquidityGap ? Math.max(avg - liquidityGap.totalUsd, 0) : 0, tone:'neg' },
-      { type:'MAGNET HIT', level: magnet ? String(Math.round(magnet.price*100)/100) : '—', amountUsd: magnet?.totalUsd || 0, tone:'warn' },
-      { type:'IMBALANCE SHIFT', level: `${imbalancePct >= 0 ? '+' : ''}${imbalancePct.toFixed(0)}%`, amountUsd: Math.abs(totalBidUsd-totalAskUsd), tone:'purple' },
-      { type:'WALL ADDED', level: walls[2]?.range || '—', amountUsd: (walls[2]?.totalUsd || 0) * .18, tone:'pos' }
+      { type:'MAGNET HIT', level: magnet ? String(Math.round(magnet.price * 100) / 100) : '—', amountUsd: magnet?.totalUsd || 0, tone:'warn' },
+      { type:'IMBALANCE SHIFT', level: `${imbalancePct >= 0 ? '+' : ''}${imbalancePct.toFixed(0)}%`, amountUsd: Math.abs(totalBidUsd - totalAskUsd), tone:'purple' },
+      { type:'WALL ADDED', level: walls[2]?.range || '—', amountUsd: (walls[2]?.totalUsd || 0) * (tf === '1w' ? 0.09 : 0.15), tone:'pos' }
     ];
     out.ok = true;
-    out.source = out.dataStatus.filter(x=>x.status==='live').map(x=>`${x.provider}(${x.rows})`).join('+') || 'orderbook';
+    out.source = out.dataStatus.filter(x => x.status === 'live').map(x => `${x.provider}(${x.rows})`).join('+') || 'orderbook';
     return out;
   }
+
 
   async function handler(req, res) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');

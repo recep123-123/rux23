@@ -1,12 +1,12 @@
 /* RUx — App entry: router, navigation, shell */
-import { State, fetchMarket, fmtPrice, fmtPct, $ } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { ICN } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { renderPage } from './pages_index.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { applyRuxVersionBadges, RUX_APP_VERSION, RUX_BUILD_ID } from './rux_version.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { scheduleCardDataAudit, startCardAuditObserver } from './rux_card_audit.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { scheduleFunctionalUiAudit, startFunctionalUiBridge } from './rux_ui_audit.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { initRuxGlobalControls, syncRuxGlobalControls } from './rux_global_controls.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { installErrorReporter } from './rux_storage.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { State, fetchMarket, fmtPrice, fmtPct, $ } from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { ICN } from './components.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { renderPage } from './pages_index.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { applyRuxVersionBadges, RUX_APP_VERSION, RUX_BUILD_ID } from './rux_version.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { scheduleCardDataAudit, startCardAuditObserver } from './rux_card_audit.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { scheduleFunctionalUiAudit, startFunctionalUiBridge } from './rux_ui_audit.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { initRuxGlobalControls, syncRuxGlobalControls } from './rux_global_controls.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { installErrorReporter } from './rux_storage.js?v=0.75.11-heatmap-tf-recalibration-20260524';
 
 
 /* =========================================================
@@ -485,7 +485,7 @@ function boot() {
 boot();
 
 
-// RUx v0.75.10-heatmap-fidelity-pass-20260524 — force visible version refresh after shell render
+// RUx v0.75.11-heatmap-tf-recalibration-20260524 — force visible version refresh after shell render
 window.addEventListener('DOMContentLoaded', () => {
   try { installErrorReporter(); } catch {}
   applyRuxVersionBadges();

@@ -1,7 +1,7 @@
 /* RUx — Setup Performans Matrisi Engine
    Setup + rejim bazında backtest/forward edge ayrıştırması. Otomatik emir üretmez. */
-import { clamp, round, summarizeBacktestRows } from './rux_core.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { loadSignalJournal, parseJournalR } from './rux_journal.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { clamp, round, summarizeBacktestRows } from './rux_core.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { loadSignalJournal, parseJournalR } from './rux_journal.js?v=0.75.11-heatmap-tf-recalibration-20260524';
 
 const MIN_SAMPLE = 12;
 const STRONG_SAMPLE = 30;

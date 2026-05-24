@@ -51,13 +51,13 @@
  * sadece composition yapar, kendi lookahead'i yok.
  */
 
-import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { runStructureEngine } from './structure_engine.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { runOrderFlowEngine } from './order_flow_engine.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { runFeatureEngine } from './pa_engine.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { noTradeDecision, finalSignalScore } from './rux_core.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { runVolumeEngine, priceLevelConfluence } from './volume_engine.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { runDeltaEngine } from './delta_engine.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { runStructureEngine } from './structure_engine.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { runOrderFlowEngine } from './order_flow_engine.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { runFeatureEngine } from './pa_engine.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { noTradeDecision, finalSignalScore } from './rux_core.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { runVolumeEngine, priceLevelConfluence } from './volume_engine.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { runDeltaEngine } from './delta_engine.js?v=0.75.11-heatmap-tf-recalibration-20260524';
 
 /* ───────── Yardımcılar ───────── */
 function num(x){ return Number.isFinite(Number(x)) ? Number(x) : NaN; }

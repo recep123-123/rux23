@@ -1,6 +1,6 @@
 /* RUx — Risk modülleri: stop yönetimi, drawdown, portföy risk, korelasyon izleme, sermaye koruma, portföy backtest */
-import { State, el, fmtPct, toast, fetchMarket, atr, ema } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, sparkline } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { State, el, fmtPct, toast, fetchMarket, atr, ema } from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, sparkline } from './components.js?v=0.75.11-heatmap-tf-recalibration-20260524';
 
 /* ====================== STOP YÖNETİMİ ====================== */
 export async function renderStop(host) {

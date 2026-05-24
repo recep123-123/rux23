@@ -1,8 +1,8 @@
 /* RUx — Rule Comparison & Optimization Paneli */
-import { el, State, fetchMarket } from './api.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { ICN, statCard, card, pageHead, tag, barbar } from './components.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { makeRuxBacktestSnapshot } from './rux_core.js?v=0.75.10-heatmap-fidelity-pass-20260524';
-import { buildRuleComparisonReport, RULE_COMPARISON_CATEGORIES, ruleComparisonCategoryLabel } from './rux_rule_compare.js?v=0.75.10-heatmap-fidelity-pass-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { ICN, statCard, card, pageHead, tag, barbar } from './components.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { makeRuxBacktestSnapshot } from './rux_core.js?v=0.75.11-heatmap-tf-recalibration-20260524';
+import { buildRuleComparisonReport, RULE_COMPARISON_CATEGORIES, ruleComparisonCategoryLabel } from './rux_rule_compare.js?v=0.75.11-heatmap-tf-recalibration-20260524';
 
 function fmtR(n, d = 3) {
   const v = Number(n || 0);
