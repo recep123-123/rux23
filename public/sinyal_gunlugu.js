@@ -1,9 +1,9 @@
 /* RUx — Sinyal Günlüğü / Signal Outcome Journal */
-import { State, fetchMarket, el, fmtPrice, toast } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { ICN, statCard, card, pageHead, tag, coinPill, checklist } from './components.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { analyzeLiveMarketSignal, simulateSignalTracking, buildSignalDataset, makeDemoCandles } from './rux_core.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { buildRuleBuilderReport } from './rux_rulebuilder.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { loadSignalJournal, saveSignalJournal, clearSignalJournal, updateJournalOutcomes, makeForwardBreakdownReport, formatJournalR } from './rux_journal.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { State, fetchMarket, el, fmtPrice, toast } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { ICN, statCard, card, pageHead, tag, coinPill, checklist } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { analyzeLiveMarketSignal, simulateSignalTracking, buildSignalDataset, makeDemoCandles } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { buildRuleBuilderReport } from './rux_rulebuilder.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { loadSignalJournal, saveSignalJournal, clearSignalJournal, updateJournalOutcomes, makeForwardBreakdownReport, formatJournalR } from './rux_journal.js?v=0.75.14-heatmap-micro-polish-20260524';
 
 const JOURNAL_KEY = 'rux.signalJournal.v1';
 const FILTER_KEY = 'rux.signalJournal.filter';

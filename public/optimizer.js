@@ -1,9 +1,9 @@
 /* RUx — Kontrollü Optimizer + Rule Set Link */
-import { el, State, fetchMarket } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, progress, tag } from './components.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { canvasHeatmap, canvasLineChart } from './charts.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { makeRuxOptimizerReport } from './rux_core.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { buildRuleBuilderReport, updateRuleSet } from './rux_rulebuilder.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, progress, tag } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { canvasHeatmap, canvasLineChart } from './charts.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { makeRuxOptimizerReport } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { buildRuleBuilderReport, updateRuleSet } from './rux_rulebuilder.js?v=0.75.14-heatmap-micro-polish-20260524';
 
 function fmtR(n, d = 2) { const v = Number(n || 0); return (v >= 0 ? '+' : '') + v.toFixed(d) + 'R'; }
 function fmtPct(n, d = 1) { return '%' + Number(n || 0).toFixed(d); }

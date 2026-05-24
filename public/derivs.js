@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];
@@ -2287,10 +2287,23 @@ function hmHeatmapSvg(d) {
   });
 
   const current=Number(d.currentPrice||0), magnet=Number(d.metrics?.magnet?.price||0);
-  if(magnet){ const y=yOf(magnet); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW+56); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','#ffb000'); line.setAttribute('stroke-width','1.8'); line.setAttribute('stroke-dasharray','5 4'); svg.appendChild(line); const tag=document.createElementNS(ns,'g'); const rr=document.createElementNS(ns,'rect'); rr.setAttribute('x',l+plotW+8); rr.setAttribute('y',y-12); rr.setAttribute('width','64'); rr.setAttribute('height','22'); rr.setAttribute('rx','5'); rr.setAttribute('fill','rgba(30,20,3,.88)'); rr.setAttribute('stroke','#ffb000'); tag.appendChild(rr); const tt=document.createElementNS(ns,'text'); tt.setAttribute('x',l+plotW+40); tt.setAttribute('y',y+4); tt.setAttribute('text-anchor','middle'); tt.setAttribute('fill','#ffb000'); tt.setAttribute('font-size','11'); tt.setAttribute('font-weight','900'); tt.textContent='MAGNET'; tag.appendChild(tt); svg.appendChild(tag); }
+  if(magnet){
+    const y=yOf(magnet); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW+54); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','#ffb000'); line.setAttribute('stroke-width','1.8'); line.setAttribute('stroke-dasharray','5 4'); svg.appendChild(line);
+    const pulse=document.createElementNS(ns,'circle'); pulse.setAttribute('cx', l + plotW*0.78); pulse.setAttribute('cy', y); pulse.setAttribute('r','7'); pulse.setAttribute('fill','rgba(255,176,0,.28)'); svg.appendChild(pulse);
+    const dot=document.createElementNS(ns,'circle'); dot.setAttribute('cx', l + plotW*0.78); dot.setAttribute('cy', y); dot.setAttribute('r','3.5'); dot.setAttribute('fill','#ffb000'); svg.appendChild(dot);
+  }
   if(current){ const y=yOf(current); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','rgba(255,255,255,.40)'); line.setAttribute('stroke-dasharray','2 5'); svg.appendChild(line); const bx=document.createElementNS(ns,'rect'); bx.setAttribute('x',l+plotW+22); bx.setAttribute('y',y-10); bx.setAttribute('width','62'); bx.setAttribute('height','20'); bx.setAttribute('rx','5'); bx.setAttribute('fill','#f5fbff'); svg.appendChild(bx); const tx=document.createElementNS(ns,'text'); tx.setAttribute('x',l+plotW+53); tx.setAttribute('y',y+5); tx.setAttribute('fill','#06131f'); tx.setAttribute('font-size','11'); tx.setAttribute('font-weight','900'); tx.setAttribute('text-anchor','middle'); tx.textContent=fmtPrice(current); svg.appendChild(tx); }
-  const labelRows=[d.walls?.[0], d.walls?.[1], d.voids?.[0]].filter(Boolean);
-  labelRows.forEach((lv,i)=>{ const y=yOf(lv.price); const text=i===0?'GÜÇLÜ DUVAR':i===1?'DUVAR':'BOŞLUK'; const col=i===2?'#ff4f7b':'#10e8a3'; const tx=l+plotW+8; const rect=document.createElementNS(ns,'rect'); rect.setAttribute('x',tx); rect.setAttribute('y',y-12); rect.setAttribute('width',text.length*7+12); rect.setAttribute('height','22'); rect.setAttribute('rx','4'); rect.setAttribute('fill','rgba(2,18,30,.92)'); rect.setAttribute('stroke',col); svg.appendChild(rect); const t0=document.createElementNS(ns,'text'); t0.setAttribute('x',tx+6); t0.setAttribute('y',y+3); t0.setAttribute('fill',col); t0.setAttribute('font-size','11'); t0.setAttribute('font-weight','900'); t0.textContent=text; svg.appendChild(t0); });
+  const labelRows=[
+    { item:d.walls?.[0], text:'GÜÇLÜ DUVAR', col:'#10e8a3', fill:'rgba(4,34,29,.92)' },
+    { item:d.walls?.[1], text:'DUVAR', col:'#22f1bc', fill:'rgba(3,27,27,.92)' },
+    { item:d.voids?.[0], text:'BOŞLUK', col:'#ff4f7b', fill:'rgba(32,9,17,.92)' },
+    magnet ? { item:{ price:magnet }, text:'MAGNET', col:'#ffb000', fill:'rgba(34,21,2,.92)' } : null
+  ].filter(x=>x && x.item);
+  labelRows.forEach((row,i)=>{
+    const y=yOf(row.item.price); const width=row.text.length*7+18; const tx=l+plotW+8; const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l+plotW-4); line.setAttribute('x2',tx-4); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke',row.col); line.setAttribute('stroke-opacity','.62'); line.setAttribute('stroke-width','1'); svg.appendChild(line);
+    const rect=document.createElementNS(ns,'rect'); rect.setAttribute('x',tx); rect.setAttribute('y',y-12); rect.setAttribute('width',width); rect.setAttribute('height','22'); rect.setAttribute('rx','4'); rect.setAttribute('fill',row.fill); rect.setAttribute('stroke',row.col); svg.appendChild(rect);
+    const t0=document.createElementNS(ns,'text'); t0.setAttribute('x',tx+8); t0.setAttribute('y',y+3); t0.setAttribute('fill',row.col); t0.setAttribute('font-size','11'); t0.setAttribute('font-weight','900'); t0.textContent=row.text; svg.appendChild(t0);
+  });
   for(let i=0;i<5;i++){ const p=low+i/4*span; const yy=yOf(p); const tx=document.createElementNS(ns,'text'); tx.setAttribute('x',l+plotW+72); tx.setAttribute('y',yy+4); tx.setAttribute('fill','#bad2dc'); tx.setAttribute('font-size','11'); tx.setAttribute('text-anchor','end'); tx.textContent=fmtPrice(p); svg.appendChild(tx); }
   return svg;
 }
@@ -2299,22 +2312,77 @@ function hmImbalanceChart(d) {
   const max=Math.max(...vals.map(x=>Math.abs(x)),1); return el('div',{class:'hm-imb-bars'},...vals.map(v=>el('i',{class:v>=0?'pos':'neg',style:`height:${8+Math.abs(v)/max*60}px`})));
 }
 function hmDepthProfile(d) {
-  const levels=(d.levels||[]).slice().sort((a,b)=>b.price-a.price).slice(0,32); const max=Math.max(...levels.map(x=>Number(x.totalUsd||0)),1); const price=Number(d.currentPrice||0);
-  return el('div',{class:'hm-depth-profile'},...levels.map(x=>el('div',{class:'hm-depth-row'},el('span',{class:'bid',style:`width:${Math.max(2,x.bidUsd/max*100)}%`}),el('span',{class:'ask',style:`width:${Math.max(2,x.askUsd/max*100)}%`}), Math.abs(x.price-price)<(d.priceRange?.step||1) ? el('b',{},fmtPrice(price)) : null)));
+  const levels = (d.levels || []).slice().sort((a,b)=>b.price-a.price).slice(0,28);
+  const max = Math.max(...levels.map(x=>Number(x.totalUsd||0)), 1);
+  const price = Number(d.currentPrice || 0);
+  return el(
+    'div',
+    { class:'hm-depth-profile' },
+    ...levels.map(x => el(
+      'div',
+      { class:'hm-depth-row' },
+      el('span', { class:'bid', style:`width:${Math.max(2, x.bidUsd / max * 100)}%` }),
+      el('span', { class:'ask', style:`width:${Math.max(2, x.askUsd / max * 100)}%` }),
+      Math.abs(x.price - price) < (d.priceRange?.step || 1) ? el('b', {}, fmtPrice(price)) : null
+    ))
+  );
 }
 function hmMiniBook(d) {
-  const rows=(d.ladder||[]).slice(0,6);
-  return el('div',{class:'hm-ladder'},el('div',{class:'hm-ladder-head'},'Fiyat (USDT)','Bid (USDT)','Ask (USDT)'),...rows.map(r=>el('div',{class:'hm-ladder-row'},el('b',{class:Math.abs(r.price-d.currentPrice)<(d.priceRange?.step||1)?'mid':''},fmtPrice(r.price)),el('span',{class:'pos'},hmUsd(r.bidUsd,1)),el('span',{class:'neg'},hmUsd(r.askUsd,1)))));
+  const rows = (d.ladder || []).slice(0,5);
+  return el(
+    'div',
+    { class:'hm-ladder' },
+    el('div', { class:'hm-ladder-head' }, 'Fiyat (USDT)', 'Bid (USDT)', 'Ask (USDT)'),
+    ...rows.map(r => el(
+      'div',
+      { class:'hm-ladder-row' },
+      el('b', { class: Math.abs(r.price - d.currentPrice) < (d.priceRange?.step || 1) ? 'mid' : '' }, fmtPrice(r.price)),
+      el('span', { class:'pos' }, hmUsd(r.bidUsd,1)),
+      el('span', { class:'neg' }, hmUsd(r.askUsd,1))
+    ))
+  );
 }
 function hmWallsTable(items = [], type = 'wall') {
-  return el('div',{class:'hm-table-list'},...items.slice(0,5).map((x,i)=>el('div',{class:'hm-table-row'},el('span',{},x.range || fmtPrice(x.price)),el('b',{class:type==='void'?'neg':(x.side==='ask'?'neg':'pos')},type==='void'?'Void':(x.side==='ask'?'Ask':'Bid')),el('strong',{},hmUsd(x.liquidityUsd,1)),el('i',{style:`width:${Math.max(8,Math.min(100,(Number(x.density||0))*100))}%`}))));
+  return el(
+    'div',
+    { class:'hm-table-list' },
+    ...items.slice(0,5).map(x => el(
+      'div',
+      { class:'hm-table-row ' + (type === 'void' ? 'void' : 'wall') },
+      el('span', {}, x.range || fmtPrice(x.price)),
+      el('b', { class: type === 'void' ? 'neg' : (x.side === 'ask' ? 'neg' : 'pos') }, type === 'void' ? 'Void' : (x.side === 'ask' ? 'Ask' : 'Bid')),
+      el('strong', {}, hmUsd(x.liquidityUsd,1)),
+      el('i', { style:`width:${Math.max(8, Math.min(100, (Number(x.density || 0)) * 100))}%` })
+    ))
+  );
 }
 function hmFlowList(d) {
-  return el('div',{class:'hm-flow-list'},...(d.flow||[]).slice(0,4).map(f=>el('div',{class:'hm-flow-row'},el('span',{},f.label),hmSpark(f.spark||[],Number(f.valuePct||0)>=0?'#10e8a3':'#ff4f7b',84,18),el('b',{class:hmTone(f.valuePct)},hmPct(f.valuePct,1)))));
+  return el(
+    'div',
+    { class:'hm-flow-list' },
+    ...(d.flow || []).slice(0,4).map(f => el(
+      'div',
+      { class:'hm-flow-row' },
+      el('span', {}, f.label),
+      hmSpark(f.spark || [], Number(f.valuePct || 0) >= 0 ? '#10e8a3' : '#ff4f7b', 96, 20),
+      el('b', { class: hmTone(f.valuePct) }, hmPct(f.valuePct,1))
+    ))
+  );
 }
 function hmSignalStrip(d) {
-  const icon = t => t==='VOID BREAK'?'⚡':t==='MAGNET HIT'?'🧲':t==='IMBALANCE SHIFT'?'⚖':'⬆';
-  return el('div',{class:'hm-signal-strip'},el('div',{class:'hm-signal-label'},'Canlı\nLikidite\nUyarıları'),...(d.alerts||[]).slice(0,6).map(a=>el('div',{class:'hm-alert-card '+(a.tone||'pos')},el('div',{class:'hm-alert-icon'},icon(a.type)),el('div',{},el('b',{},a.type),el('span',{},a.level),el('small',{},hmUsd(a.amountUsd,1))))),el('button',{class:'hm-next'},'›'));
+  const icon = t => t === 'VOID BREAK' ? '⚡' : t === 'MAGNET HIT' ? '🧲' : t === 'IMBALANCE SHIFT' ? '⚖' : '⬆';
+  return el(
+    'div',
+    { class:'hm-signal-strip' },
+    el('div', { class:'hm-signal-label' }, `Canlı\nLikidite\nUyarıları`),
+    ...(d.alerts || []).slice(0,6).map(a => el(
+      'div',
+      { class:'hm-alert-card ' + (a.tone || 'pos') },
+      el('div', { class:'hm-alert-icon' }, icon(a.type)),
+      el('div', {}, el('b', {}, a.type), el('span', {}, a.level), el('small', {}, hmUsd(a.amountUsd,1)))
+    )),
+    el('button', { class:'hm-next' }, '›')
+  );
 }
 
 export async function renderDerivsHeatmap(host) {

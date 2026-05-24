@@ -46,8 +46,8 @@
  *   - CVD'nin son değeri = son closed candle'ın cumulative değeri
  */
 
-import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { findConfirmedPivots } from './structure_engine.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { findConfirmedPivots } from './structure_engine.js?v=0.75.14-heatmap-micro-polish-20260524';
 
 /* ───────── Yardımcılar ───────── */
 function num(x){ return Number.isFinite(Number(x)) ? Number(x) : NaN; }

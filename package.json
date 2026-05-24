@@ -1,6 +1,6 @@
 {
   "name": "rux-trade-terminal",
-  "version": "0.75.13",
+  "version": "0.75.14",
   "private": true,
   "scripts": {
     "build": "echo Static Vercel deployment ready",

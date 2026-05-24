@@ -26,7 +26,7 @@
  * Tüm fonksiyonlar saf (pure). Aynı input → aynı output. Lookahead yok.
  */
 
-import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.14-heatmap-micro-polish-20260524';
 
 /* ───────── Saf yardımcılar ───────── */
 function num(x){ return Number.isFinite(Number(x)) ? Number(x) : NaN; }

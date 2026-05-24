@@ -322,7 +322,7 @@ export function makeSignalReplayReport({ marketData, journalRows = [], selectedS
   const avgMfe = collection.length ? mean(collection.map(x => x.mfe)) : 0;
   const avgMae = collection.length ? mean(collection.map(x => x.mae)) : 0;
   return {
-    version: 'RUx v0.75.13-heatmap-spacing-premium-pass-20260524',
+    version: 'RUx v0.75.14-heatmap-micro-polish-20260524',
     generatedAt: new Date().toISOString(),
     source: (marketData && marketData.source) || 'market candles / fallback replay',
     symbol,

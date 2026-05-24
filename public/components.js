@@ -1,5 +1,5 @@
 /* RUx — UI components */
-import { el, svg, fmtNum, fmtPrice, fmtPct, coinClass, coinShort, coinName } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { el, svg, fmtNum, fmtPrice, fmtPct, coinClass, coinShort, coinName } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
 
 /* ---- ICONS (lightweight inline SVG) ---- */
 export const ICN = {

@@ -14,9 +14,9 @@ import {
   getRuxSourceLog,
   RUX_HEALTH_ENDPOINTS,
   testApiEndpoint
-} from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+} from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
 
-export const RUX_DATA_ADAPTER_VERSION = 'RUx v0.75.13-heatmap-spacing-premium-pass-20260524';
+export const RUX_DATA_ADAPTER_VERSION = 'RUx v0.75.14-heatmap-micro-polish-20260524';
 
 export const RUX_UNIFIED_MARKET_SCHEMA = Object.freeze({
   symbol: 'string',

@@ -1,7 +1,7 @@
 /* RUx — No-Trade Validation / Filtre Testi */
-import { el, State, fetchMarket, fmtNum } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { ICN, card, pageHead, statCard, tag } from './components.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { makeDemoCandles, analyzeLiveMarketSignal, simulateManualPlanOutcome } from './rux_core.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { el, State, fetchMarket, fmtNum } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { ICN, card, pageHead, statCard, tag } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { makeDemoCandles, analyzeLiveMarketSignal, simulateManualPlanOutcome } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
 
 function round(n, d = 2) {
   const x = Number(n);

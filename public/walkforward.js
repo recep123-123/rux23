@@ -1,10 +1,10 @@
 /* RUx — Out-of-Sample & Walk-forward Validation Panel */
-import { el, State, fetchMarket } from './api.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { canvasLineChart, canvasHeatmap } from './charts.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { makeWalkForwardReport, makeRuxBacktestSnapshot } from './rux_core.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { buildRuleBuilderReport, updateRuleSet } from './rux_rulebuilder.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
-import { makeForwardJournalReport, formatJournalR } from './rux_journal.js?v=0.75.13-heatmap-spacing-premium-pass-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { canvasLineChart, canvasHeatmap } from './charts.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { makeWalkForwardReport, makeRuxBacktestSnapshot } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { buildRuleBuilderReport, updateRuleSet } from './rux_rulebuilder.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { makeForwardJournalReport, formatJournalR } from './rux_journal.js?v=0.75.14-heatmap-micro-polish-20260524';
 
 function fmtR(n, d = 2) {
   const v = Number(n || 0);
