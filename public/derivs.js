@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];
@@ -2198,21 +2198,48 @@ function hmCard(title, body, extraClass = '', action = '') {
   );
 }
 function hmGauge(score = 50, label = 'GÜÇLÜ') {
-  const ns = 'http://www.w3.org/2000/svg'; const w = 214, h = 145, cx = 107, cy = 118, r = 76;
-  const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.setAttribute('class', 'hm-gauge');
+  const ns = 'http://www.w3.org/2000/svg';
+  const w = 236, h = 150, cx = 118, cy = 120, r = 78;
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.setAttribute('class', 'hm-gauge');
   const defs = document.createElementNS(ns, 'defs');
-  defs.innerHTML = '<filter id="gGlow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  defs.innerHTML = `<filter id="gGlow" x="-40%" y="-60%" width="180%" height="220%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
   svg.appendChild(defs);
-  const track=document.createElementNS(ns,'path'); track.setAttribute('d',`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`); track.setAttribute('fill','none'); track.setAttribute('stroke','rgba(150,190,205,.12)'); track.setAttribute('stroke-width','15'); svg.appendChild(track);
-  const segs = [['#ff4f7b', Math.PI, Math.PI*1.25], ['#ff7a45', Math.PI*1.25, Math.PI*1.45], ['#ffb000', Math.PI*1.45, Math.PI*1.62], ['#7ee86b', Math.PI*1.62, Math.PI*1.81], ['#10e8a3', Math.PI*1.81, Math.PI*2]];
-  segs.forEach(([c,a1,a2]) => { const x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1), x2=cx+r*Math.cos(a2), y2=cy+r*Math.sin(a2); const p=document.createElementNS(ns,'path'); p.setAttribute('d',`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`); p.setAttribute('fill','none'); p.setAttribute('stroke',c); p.setAttribute('stroke-width','13'); p.setAttribute('opacity','.95'); p.setAttribute('filter','url(#gGlow)'); svg.appendChild(p); });
-  for (let i=0;i<=28;i++){ const a=Math.PI+i/28*Math.PI; const x1=cx+(r+7)*Math.cos(a), y1=cy+(r+7)*Math.sin(a), x2=cx+(r+13)*Math.cos(a), y2=cy+(r+13)*Math.sin(a); const l=document.createElementNS(ns,'line'); l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2); l.setAttribute('stroke', i%7?'rgba(167,227,237,.22)':'rgba(167,227,237,.68)'); l.setAttribute('stroke-width', i%7?'1':'1.6'); svg.appendChild(l); }
-  const frac = Math.max(0, Math.min(1, Number(score || 0) / 100)); const a = Math.PI + frac * Math.PI;
-  const x = cx + (r-8) * Math.cos(a), y = cy + (r-8) * Math.sin(a);
-  const needle = document.createElementNS(ns, 'line'); needle.setAttribute('x1', cx); needle.setAttribute('y1', cy); needle.setAttribute('x2', x); needle.setAttribute('y2', y); needle.setAttribute('stroke', '#eefbff'); needle.setAttribute('stroke-width', '3.2'); needle.setAttribute('stroke-linecap', 'round'); svg.appendChild(needle);
-  const dot=document.createElementNS(ns,'circle'); dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r','7'); dot.setAttribute('fill','#eefbff'); svg.appendChild(dot);
-  const txt=document.createElementNS(ns,'text'); txt.setAttribute('x',cx); txt.setAttribute('y',cy-20); txt.setAttribute('text-anchor','middle'); txt.setAttribute('fill','#eefbff'); txt.setAttribute('font-size','19'); txt.setAttribute('font-weight','900'); txt.textContent=String(Math.round(score)); svg.appendChild(txt);
-  const sub=document.createElementNS(ns,'text'); sub.setAttribute('x',cx); sub.setAttribute('y',cy+28); sub.setAttribute('text-anchor','middle'); sub.setAttribute('fill','#10e8a3'); sub.setAttribute('font-size','14'); sub.setAttribute('font-weight','900'); sub.textContent=label; svg.appendChild(sub);
+  const track = document.createElementNS(ns, 'path');
+  track.setAttribute('d', `M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`);
+  track.setAttribute('fill', 'none');
+  track.setAttribute('stroke', 'rgba(150,190,205,.14)');
+  track.setAttribute('stroke-width', '15');
+  svg.appendChild(track);
+  const segs = [['#ff4f7b', Math.PI, Math.PI*1.26], ['#ff7b4d', Math.PI*1.26, Math.PI*1.46], ['#ffb000', Math.PI*1.46, Math.PI*1.62], ['#97e25a', Math.PI*1.62, Math.PI*1.81], ['#10e8a3', Math.PI*1.81, Math.PI*2]];
+  segs.forEach(([c,a1,a2]) => {
+    const x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1), x2 = cx + r*Math.cos(a2), y2 = cy + r*Math.sin(a2);
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', `M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`);
+    p.setAttribute('fill', 'none'); p.setAttribute('stroke', c); p.setAttribute('stroke-width', '13'); p.setAttribute('opacity', '.98'); p.setAttribute('filter', 'url(#gGlow)');
+    svg.appendChild(p);
+  });
+  for (let i = 0; i <= 30; i++) {
+    const a = Math.PI + i / 30 * Math.PI;
+    const outer = i % 5 === 0 ? 16 : 11;
+    const x1 = cx + (r + 6) * Math.cos(a), y1 = cy + (r + 6) * Math.sin(a);
+    const x2 = cx + (r + outer) * Math.cos(a), y2 = cy + (r + outer) * Math.sin(a);
+    const l = document.createElementNS(ns, 'line');
+    l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+    l.setAttribute('stroke', i % 5 === 0 ? 'rgba(199,237,245,.80)' : 'rgba(167,227,237,.22)');
+    l.setAttribute('stroke-width', i % 5 === 0 ? '1.7' : '1');
+    svg.appendChild(l);
+  }
+  const frac = Math.max(0, Math.min(1, Number(score || 0) / 100));
+  const a = Math.PI + frac * Math.PI;
+  const x = cx + (r - 10) * Math.cos(a), y = cy + (r - 10) * Math.sin(a);
+  const needle = document.createElementNS(ns, 'line');
+  needle.setAttribute('x1', cx); needle.setAttribute('y1', cy); needle.setAttribute('x2', x); needle.setAttribute('y2', y); needle.setAttribute('stroke', '#f4fbff'); needle.setAttribute('stroke-width', '3.3'); needle.setAttribute('stroke-linecap', 'round');
+  svg.appendChild(needle);
+  const dot = document.createElementNS(ns, 'circle'); dot.setAttribute('cx', cx); dot.setAttribute('cy', cy); dot.setAttribute('r', '7'); dot.setAttribute('fill', '#f4fbff'); svg.appendChild(dot);
+  const scoreTxt = document.createElementNS(ns, 'text'); scoreTxt.setAttribute('x', cx); scoreTxt.setAttribute('y', cy - 14); scoreTxt.setAttribute('text-anchor', 'middle'); scoreTxt.setAttribute('fill', '#eefbff'); scoreTxt.setAttribute('font-size', '18'); scoreTxt.setAttribute('font-weight', '900'); scoreTxt.textContent = String(Math.round(score)); svg.appendChild(scoreTxt);
+  const labelTxt = document.createElementNS(ns, 'text'); labelTxt.setAttribute('x', cx); labelTxt.setAttribute('y', cy + 27); labelTxt.setAttribute('text-anchor', 'middle'); labelTxt.setAttribute('fill', '#10e8a3'); labelTxt.setAttribute('font-size', '13.5'); labelTxt.setAttribute('font-weight', '900'); labelTxt.textContent = label; svg.appendChild(labelTxt);
   return svg;
 }
 function hmDonut(items = [], totalLabel = '') {
@@ -2229,82 +2256,107 @@ function hmDonut(items = [], totalLabel = '') {
 }
 function hmHeatmapSvg(d) {
   const ns = 'http://www.w3.org/2000/svg';
-  const w=1120, h=326, l=42, r=92, t=14, b=28;
-  const plotW=w-l-r, plotH=h-t-b;
-  const low=Number(d?.priceRange?.low || 0), high=Number(d?.priceRange?.high || 1), span=Math.max(1e-9, high-low);
-  const svg=document.createElementNS(ns,'svg'); svg.setAttribute('viewBox',`0 0 ${w} ${h}`); svg.setAttribute('class','hm-main-svg');
+  const w = 1136, h = 338, l = 38, r = 104, t = 14, b = 24;
+  const plotW = w - l - r, plotH = h - t - b;
+  const low = Number(d?.priceRange?.low || 0), high = Number(d?.priceRange?.high || 1), span = Math.max(1e-9, high - low);
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.setAttribute('class', 'hm-main-svg');
   const tf = d?.timeframe || '15m';
-  const targetBands = Number(d?.heatBands || ({'5m':34,'15m':30,'1h':24,'4h':20,'1d':16,'1w':12}[tf] || 24));
-  const candleWindow = Math.max(24, Math.min(Number(d?.chartWindow || 70), (d.candles||[]).length || 70));
-  const candles=(d.candles||[]).slice(-candleWindow);
-  const yOf=p=>t + (high-Number(p))/span*plotH;
-  const xOf=i=>l + (i/Math.max(1,candles.length-1))*plotW;
-  const defs=document.createElementNS(ns,'defs');
+  const cfg = {
+    '5m': { bands: 40, width: .24, scatter: .72, bandH: 1.18, candles: 108, wick: 1.1, bodyMax: 4.2 },
+    '15m': { bands: 34, width: .34, scatter: .54, bandH: 1.36, candles: 96, wick: 1.2, bodyMax: 4.8 },
+    '1h': { bands: 26, width: .48, scatter: .28, bandH: 1.72, candles: 82, wick: 1.4, bodyMax: 6.2 },
+    '4h': { bands: 20, width: .62, scatter: .18, bandH: 2.15, candles: 64, wick: 1.55, bodyMax: 7.2 },
+    '1d': { bands: 14, width: .76, scatter: .10, bandH: 2.65, candles: 46, wick: 1.65, bodyMax: 8.5 },
+    '1w': { bands: 8, width: .90, scatter: .03, bandH: 3.2, candles: 24, wick: 1.85, bodyMax: 9.6 }
+  }[tf] || { bands: 26, width: .48, scatter: .28, bandH: 1.72, candles: 82, wick: 1.4, bodyMax: 6.2 };
+  const yOf = p => t + (high - Number(p)) / span * plotH;
+  const defs = document.createElementNS(ns, 'defs');
   defs.innerHTML = `
-    <linearGradient id="hmBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#092a3f"/><stop offset="100%" stop-color="#031421"/></linearGradient>
-    <linearGradient id="hmBid" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(24,240,176,.00)"/><stop offset="35%" stop-color="rgba(24,240,176,.28)"/><stop offset="100%" stop-color="rgba(24,240,176,.85)"/></linearGradient>
-    <linearGradient id="hmAsk" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,79,125,.00)"/><stop offset="35%" stop-color="rgba(255,79,125,.28)"/><stop offset="100%" stop-color="rgba(255,79,125,.84)"/></linearGradient>
-    <linearGradient id="hmVoid" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,79,125,.02)"/><stop offset="100%" stop-color="rgba(255,79,125,.22)"/></linearGradient>
-    <filter id="hmGlow" x="-30%" y="-120%" width="160%" height="340%"><feGaussianBlur stdDeviation="2.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="hmBg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a3147"/><stop offset="100%" stop-color="#041826"/></linearGradient>
+    <linearGradient id="hmBid2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(24,240,176,0)"/><stop offset="38%" stop-color="rgba(24,240,176,.26)"/><stop offset="100%" stop-color="rgba(24,240,176,.92)"/></linearGradient>
+    <linearGradient id="hmAsk2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,79,125,0)"/><stop offset="38%" stop-color="rgba(255,79,125,.25)"/><stop offset="100%" stop-color="rgba(255,79,125,.90)"/></linearGradient>
+    <linearGradient id="hmVoid2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,79,125,.01)"/><stop offset="100%" stop-color="rgba(255,79,125,.19)"/></linearGradient>
+    <filter id="hmGlow2" x="-40%" y="-130%" width="180%" height="360%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   `;
   svg.appendChild(defs);
-  const bg=document.createElementNS(ns,'rect'); bg.setAttribute('x',l); bg.setAttribute('y',t); bg.setAttribute('width',plotW); bg.setAttribute('height',plotH); bg.setAttribute('rx','3'); bg.setAttribute('fill','url(#hmBg)'); svg.appendChild(bg);
-  for(let i=0;i<8;i++){ const y=t+i/7*plotH; const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','rgba(121,176,200,.11)'); svg.appendChild(line); }
-  for(let i=0;i<14;i++){ const x=l+i/13*plotW; const line=document.createElementNS(ns,'line'); line.setAttribute('x1',x); line.setAttribute('x2',x); line.setAttribute('y1',t); line.setAttribute('y2',t+plotH); line.setAttribute('stroke','rgba(121,176,200,.06)'); svg.appendChild(line); }
-
-  const ranked = (d.levels||[]).slice().filter(x => Number(x.totalUsd||0) > 0).sort((a,b)=>Number(b.relevance||b.totalUsd||0)-Number(a.relevance||a.totalUsd||0)).slice(0,targetBands);
-  const widthBase = ({'5m':0.34,'15m':0.40,'1h':0.52,'4h':0.64,'1d':0.78,'1w':0.90}[tf] || 0.52);
-  const scatter = ({'5m':0.62,'15m':0.52,'1h':0.38,'4h':0.26,'1d':0.18,'1w':0.10}[tf] || 0.38);
-  const bandHMult = ({'5m':1.3,'15m':1.45,'1h':1.75,'4h':2.05,'1d':2.45,'1w':3.0}[tf] || 1.8);
-  ranked.forEach((lv, idx) => {
-    const dens = Math.max(0.08, Math.min(1, Number(lv.density||0)));
+  const bg = document.createElementNS(ns, 'rect');
+  bg.setAttribute('x', l); bg.setAttribute('y', t); bg.setAttribute('width', plotW); bg.setAttribute('height', plotH); bg.setAttribute('rx', '4'); bg.setAttribute('fill', 'url(#hmBg2)');
+  svg.appendChild(bg);
+  for (let i = 0; i <= 6; i++) {
+    const y = t + i / 6 * plotH;
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', l); line.setAttribute('x2', l + plotW); line.setAttribute('y1', y); line.setAttribute('y2', y); line.setAttribute('stroke', 'rgba(130,180,200,.11)');
+    svg.appendChild(line);
+  }
+  const vLines = tf === '1w' ? 8 : tf === '1d' ? 10 : tf === '4h' ? 12 : 14;
+  for (let i = 0; i <= vLines; i++) {
+    const x = l + i / vLines * plotW;
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', x); line.setAttribute('x2', x); line.setAttribute('y1', t); line.setAttribute('y2', t + plotH); line.setAttribute('stroke', 'rgba(121,176,200,.055)');
+    svg.appendChild(line);
+  }
+  const levels = (d.levels || []).slice().filter(x => Number(x.totalUsd || 0) > 0).sort((a,b)=>Number(b.relevance||b.totalUsd||0)-Number(a.relevance||a.totalUsd||0)).slice(0, Number(d?.heatBands || cfg.bands));
+  levels.forEach((lv, idx) => {
+    const dens = Math.max(0.08, Math.min(1, Number(lv.density || 0)));
     const y = yOf(lv.price);
-    const bandH = Math.max(4, Math.min(22, (d?.priceRange?.step || 1) / span * plotH * bandHMult));
-    const widthPct = lv.kind === 'void' ? Math.max(0.22, widthBase*0.48) + dens * 0.16 : widthBase + dens * ({'5m':0.12,'15m':0.16,'1h':0.20,'4h':0.24,'1d':0.20,'1w':0.08}[tf] || 0.18);
-    const width = plotW * Math.min(0.98, widthPct);
-    const anchor = (((idx * 37) % 100) / 100 - 0.5) * scatter;
-    const x = l + (plotW - width) * (0.5 + anchor);
-    const rect = document.createElementNS(ns,'rect');
-    rect.setAttribute('x',x); rect.setAttribute('y',y-bandH/2); rect.setAttribute('width',width); rect.setAttribute('height',bandH); rect.setAttribute('rx','3');
-    const fill = lv.kind === 'void' ? 'url(#hmVoid)' : (lv.side === 'ask' ? 'url(#hmAsk)' : 'url(#hmBid)');
-    rect.setAttribute('fill',fill);
-    rect.setAttribute('opacity', String(lv.kind === 'void' ? (0.12 + dens*0.11) : (0.18 + dens*0.58)));
-    if (dens > 0.44) rect.setAttribute('filter','url(#hmGlow)');
+    const bandH = Math.max(4, Math.min(26, (d?.priceRange?.step || 1) / span * plotH * cfg.bandH));
+    const width = plotW * Math.min(.985, cfg.width + dens * (tf === '1w' ? .03 : tf === '1d' ? .06 : tf === '4h' ? .10 : .14));
+    const anchor = (((idx * 41) % 100) / 100 - .5) * cfg.scatter;
+    const x = l + (plotW - width) * (.5 + anchor);
+    const rect = document.createElementNS(ns, 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y - bandH/2); rect.setAttribute('width', width); rect.setAttribute('height', bandH); rect.setAttribute('rx', '3');
+    rect.setAttribute('fill', lv.kind === 'void' ? 'url(#hmVoid2)' : (lv.side === 'ask' ? 'url(#hmAsk2)' : 'url(#hmBid2)'));
+    rect.setAttribute('opacity', String(lv.kind === 'void' ? (.12 + dens * .10) : (.18 + dens * .66)));
+    if (dens > .42) rect.setAttribute('filter', 'url(#hmGlow2)');
     svg.appendChild(rect);
-    if (dens > 0.70 && lv.kind !== 'void') {
-      const core = document.createElementNS(ns,'rect');
-      core.setAttribute('x', x + width*0.04); core.setAttribute('y', y - Math.max(2, bandH*0.18)); core.setAttribute('width', width*0.92); core.setAttribute('height', Math.max(2, bandH*0.36)); core.setAttribute('rx','2');
-      core.setAttribute('fill', lv.side === 'ask' ? 'rgba(255,79,125,.30)' : 'rgba(24,240,176,.36)'); core.setAttribute('opacity','0.88');
+    if (dens > .67 && lv.kind !== 'void') {
+      const core = document.createElementNS(ns, 'rect');
+      core.setAttribute('x', x + width * .04); core.setAttribute('y', y - Math.max(2, bandH * .19)); core.setAttribute('width', width * .92); core.setAttribute('height', Math.max(2, bandH * .38)); core.setAttribute('rx', '2');
+      core.setAttribute('fill', lv.side === 'ask' ? 'rgba(255,79,125,.34)' : 'rgba(24,240,176,.38)'); core.setAttribute('opacity', '.92');
       svg.appendChild(core);
     }
   });
-
-  const candleW = Math.max(2.4, Math.min(tf === '1w' ? 9.2 : tf === '1d' ? 8.0 : 7.0, plotW / Math.max(24, candles.length) * 0.72));
-  candles.forEach((c,i)=>{
-    const x=xOf(i), yo=yOf(c.open), yc=yOf(c.close), yh=yOf(c.high), yl=yOf(c.low); const col=c.close>=c.open?'#2af0c2':'#ff5a84';
-    const wick=document.createElementNS(ns,'line'); wick.setAttribute('x1',x); wick.setAttribute('x2',x); wick.setAttribute('y1',yh); wick.setAttribute('y2',yl); wick.setAttribute('stroke',col); wick.setAttribute('stroke-width', candleW > 5 ? '1.8' : '1.35'); wick.setAttribute('opacity','.98'); svg.appendChild(wick);
-    const body=document.createElementNS(ns,'rect'); body.setAttribute('x',x-candleW/2); body.setAttribute('width', String(candleW)); body.setAttribute('y',Math.min(yo,yc)); body.setAttribute('height',Math.max(3,Math.abs(yc-yo))); body.setAttribute('rx','1.1'); body.setAttribute('fill',col); body.setAttribute('opacity','.99'); svg.appendChild(body);
+  const candles = (d.candles || []).slice(-Math.max(18, Math.min(cfg.candles, Number(d.chartWindow || cfg.candles))));
+  const xOf = i => l + (i / Math.max(1, candles.length - 1)) * plotW;
+  const candleW = Math.max(2.2, Math.min(cfg.bodyMax, plotW / Math.max(20, candles.length) * .68));
+  candles.forEach((c, i) => {
+    const x = xOf(i), yo = yOf(c.open), yc = yOf(c.close), yh = yOf(c.high), yl = yOf(c.low), col = c.close >= c.open ? '#30f2c3' : '#ff5f88';
+    const wick = document.createElementNS(ns, 'line'); wick.setAttribute('x1', x); wick.setAttribute('x2', x); wick.setAttribute('y1', yh); wick.setAttribute('y2', yl); wick.setAttribute('stroke', col); wick.setAttribute('stroke-width', String(cfg.wick)); wick.setAttribute('opacity', '.98'); svg.appendChild(wick);
+    const body = document.createElementNS(ns, 'rect'); body.setAttribute('x', x - candleW / 2); body.setAttribute('width', String(candleW)); body.setAttribute('y', Math.min(yo, yc)); body.setAttribute('height', Math.max(2.4, Math.abs(yc - yo))); body.setAttribute('rx', '1.2'); body.setAttribute('fill', col); body.setAttribute('opacity', '.995'); svg.appendChild(body);
   });
-
-  const current=Number(d.currentPrice||0), magnet=Number(d.metrics?.magnet?.price||0);
-  if(magnet){
-    const y=yOf(magnet); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW+54); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','#ffb000'); line.setAttribute('stroke-width','1.8'); line.setAttribute('stroke-dasharray','5 4'); svg.appendChild(line);
-    const pulse=document.createElementNS(ns,'circle'); pulse.setAttribute('cx', l + plotW*0.78); pulse.setAttribute('cy', y); pulse.setAttribute('r','7'); pulse.setAttribute('fill','rgba(255,176,0,.28)'); svg.appendChild(pulse);
-    const dot=document.createElementNS(ns,'circle'); dot.setAttribute('cx', l + plotW*0.78); dot.setAttribute('cy', y); dot.setAttribute('r','3.5'); dot.setAttribute('fill','#ffb000'); svg.appendChild(dot);
+  const current = Number(d.currentPrice || 0), magnet = Number(d.metrics?.magnet?.price || 0);
+  if (magnet) {
+    const y = yOf(magnet); const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', l); line.setAttribute('x2', l + plotW + 8); line.setAttribute('y1', y); line.setAttribute('y2', y); line.setAttribute('stroke', '#ffb000'); line.setAttribute('stroke-width', '1.6'); line.setAttribute('stroke-dasharray', '4 4');
+    svg.appendChild(line);
+    const pulse = document.createElementNS(ns, 'circle'); pulse.setAttribute('cx', l + plotW * .79); pulse.setAttribute('cy', y); pulse.setAttribute('r', '7'); pulse.setAttribute('fill', 'rgba(255,176,0,.26)'); svg.appendChild(pulse);
+    const dot = document.createElementNS(ns, 'circle'); dot.setAttribute('cx', l + plotW * .79); dot.setAttribute('cy', y); dot.setAttribute('r', '3.4'); dot.setAttribute('fill', '#ffb000'); svg.appendChild(dot);
   }
-  if(current){ const y=yOf(current); const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l); line.setAttribute('x2',l+plotW); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke','rgba(255,255,255,.40)'); line.setAttribute('stroke-dasharray','2 5'); svg.appendChild(line); const bx=document.createElementNS(ns,'rect'); bx.setAttribute('x',l+plotW+22); bx.setAttribute('y',y-10); bx.setAttribute('width','62'); bx.setAttribute('height','20'); bx.setAttribute('rx','5'); bx.setAttribute('fill','#f5fbff'); svg.appendChild(bx); const tx=document.createElementNS(ns,'text'); tx.setAttribute('x',l+plotW+53); tx.setAttribute('y',y+5); tx.setAttribute('fill','#06131f'); tx.setAttribute('font-size','11'); tx.setAttribute('font-weight','900'); tx.setAttribute('text-anchor','middle'); tx.textContent=fmtPrice(current); svg.appendChild(tx); }
-  const labelRows=[
-    { item:d.walls?.[0], text:'GÜÇLÜ DUVAR', col:'#10e8a3', fill:'rgba(4,34,29,.92)' },
-    { item:d.walls?.[1], text:'DUVAR', col:'#22f1bc', fill:'rgba(3,27,27,.92)' },
-    { item:d.voids?.[0], text:'BOŞLUK', col:'#ff4f7b', fill:'rgba(32,9,17,.92)' },
-    magnet ? { item:{ price:magnet }, text:'MAGNET', col:'#ffb000', fill:'rgba(34,21,2,.92)' } : null
-  ].filter(x=>x && x.item);
-  labelRows.forEach((row,i)=>{
-    const y=yOf(row.item.price); const width=row.text.length*7+18; const tx=l+plotW+8; const line=document.createElementNS(ns,'line'); line.setAttribute('x1',l+plotW-4); line.setAttribute('x2',tx-4); line.setAttribute('y1',y); line.setAttribute('y2',y); line.setAttribute('stroke',row.col); line.setAttribute('stroke-opacity','.62'); line.setAttribute('stroke-width','1'); svg.appendChild(line);
-    const rect=document.createElementNS(ns,'rect'); rect.setAttribute('x',tx); rect.setAttribute('y',y-12); rect.setAttribute('width',width); rect.setAttribute('height','22'); rect.setAttribute('rx','4'); rect.setAttribute('fill',row.fill); rect.setAttribute('stroke',row.col); svg.appendChild(rect);
-    const t0=document.createElementNS(ns,'text'); t0.setAttribute('x',tx+8); t0.setAttribute('y',y+3); t0.setAttribute('fill',row.col); t0.setAttribute('font-size','11'); t0.setAttribute('font-weight','900'); t0.textContent=row.text; svg.appendChild(t0);
+  if (current) {
+    const y = yOf(current); const line = document.createElementNS(ns, 'line'); line.setAttribute('x1', l); line.setAttribute('x2', l + plotW); line.setAttribute('y1', y); line.setAttribute('y2', y); line.setAttribute('stroke', 'rgba(255,255,255,.42)'); line.setAttribute('stroke-dasharray', '2 4'); svg.appendChild(line);
+    const bx = document.createElementNS(ns, 'rect'); bx.setAttribute('x', l + plotW + 24); bx.setAttribute('y', y - 10); bx.setAttribute('width', '68'); bx.setAttribute('height', '20'); bx.setAttribute('rx', '5'); bx.setAttribute('fill', '#f5fbff'); svg.appendChild(bx);
+    const tx = document.createElementNS(ns, 'text'); tx.setAttribute('x', l + plotW + 58); tx.setAttribute('y', y + 4); tx.setAttribute('fill', '#06131f'); tx.setAttribute('font-size', '11'); tx.setAttribute('font-weight', '900'); tx.setAttribute('text-anchor', 'middle'); tx.textContent = fmtPrice(current); svg.appendChild(tx);
+  }
+  const labelRows = [
+    { item: d.walls?.[0], text: 'GÜÇLÜ DUVAR', col: '#10e8a3', fill: 'rgba(4,34,29,.94)' },
+    { item: d.walls?.[1], text: 'DUVAR', col: '#22f1bc', fill: 'rgba(3,27,27,.94)' },
+    { item: d.voids?.[0], text: 'BOŞLUK', col: '#ff4f7b', fill: 'rgba(32,9,17,.94)' },
+    magnet ? { item: { price: magnet }, text: 'MAGNET', col: '#ffb000', fill: 'rgba(34,21,2,.94)' } : null
+  ].filter(Boolean);
+  labelRows.forEach((row, i) => {
+    const y = yOf(row.item.price) + (i === 0 ? -18 : i === 1 ? -3 : i === 2 ? 12 : 0);
+    const width = row.text.length * 7 + 18;
+    const tx = l + plotW + 8;
+    const line = document.createElementNS(ns, 'line'); line.setAttribute('x1', l + plotW - 4); line.setAttribute('x2', tx - 4); line.setAttribute('y1', y); line.setAttribute('y2', y); line.setAttribute('stroke', row.col); line.setAttribute('stroke-opacity', '.62'); line.setAttribute('stroke-width', '1'); svg.appendChild(line);
+    const rect = document.createElementNS(ns, 'rect'); rect.setAttribute('x', tx); rect.setAttribute('y', y - 11); rect.setAttribute('width', width); rect.setAttribute('height', '21'); rect.setAttribute('rx', '4'); rect.setAttribute('fill', row.fill); rect.setAttribute('stroke', row.col); svg.appendChild(rect);
+    const t0 = document.createElementNS(ns, 'text'); t0.setAttribute('x', tx + 8); t0.setAttribute('y', y + 3); t0.setAttribute('fill', row.col); t0.setAttribute('font-size', '10.5'); t0.setAttribute('font-weight', '900'); t0.textContent = row.text; svg.appendChild(t0);
   });
-  for(let i=0;i<5;i++){ const p=low+i/4*span; const yy=yOf(p); const tx=document.createElementNS(ns,'text'); tx.setAttribute('x',l+plotW+72); tx.setAttribute('y',yy+4); tx.setAttribute('fill','#bad2dc'); tx.setAttribute('font-size','11'); tx.setAttribute('text-anchor','end'); tx.textContent=fmtPrice(p); svg.appendChild(tx); }
+  for (let i = 0; i < 5; i++) {
+    const p = low + i / 4 * span; const yy = yOf(p);
+    const tx = document.createElementNS(ns, 'text'); tx.setAttribute('x', l + plotW + 96); tx.setAttribute('y', yy + 4); tx.setAttribute('fill', '#bad2dc'); tx.setAttribute('font-size', '11'); tx.setAttribute('text-anchor', 'end'); tx.textContent = fmtPrice(p); svg.appendChild(tx);
+  }
   return svg;
 }
 function hmImbalanceChart(d) {

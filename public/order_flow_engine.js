@@ -38,8 +38,8 @@
  *   - Sweep yalnızca confirmed pivot + kapanmış sweep mumu üstünde
  */
 
-import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { findConfirmedPivots, runStructureEngine } from './structure_engine.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { findConfirmedPivots, runStructureEngine } from './structure_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 /* ───────── Yardımcılar ───────── */
 function num(x){ return Number.isFinite(Number(x)) ? Number(x) : NaN; }

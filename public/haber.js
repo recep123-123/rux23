@@ -1,6 +1,6 @@
 /* RUx — Haber Akışı / Telegram filtre motoru */
-import { fetchNews, State, el, fmtTimeShort, toast } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, pageHead } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { fetchNews, State, el, fmtTimeShort, toast } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, pageHead } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 let currentMode = 'global';
 const NEWS_REFRESH_MS = 5_000;

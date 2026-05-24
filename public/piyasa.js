@@ -1,9 +1,9 @@
 /* RUx — Piyasa Özeti (image 3) */
-import { State, fetchMarket, fetchCMC, fetchFearGreed, fetchNews, fetchTickers, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, card, pageHead, halfGauge, sparkline, donut, coinPill, heatColorClass } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { canvasLineChart } from './charts.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { addDashboardWidget } from './rux_actions.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { makeDemoCandles, makeRegimeHysteresisReport } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { State, fetchMarket, fetchCMC, fetchFearGreed, fetchNews, fetchTickers, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, card, pageHead, halfGauge, sparkline, donut, coinPill, heatColorClass } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { canvasLineChart } from './charts.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { addDashboardWidget } from './rux_actions.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { makeDemoCandles, makeRegimeHysteresisReport } from './rux_core.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 export async function renderPiyasa(host) {
   host.innerHTML = '';

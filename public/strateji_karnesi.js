@@ -1,10 +1,10 @@
 /* RUx — Strateji Karnesi / Strategy Scorecard */
-import { el, State, fetchMarket } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, card, pageHead, tag, progress, checklist } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { canvasLineChart, canvasBarChart } from './charts.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { makeRuxBacktestSnapshot, makeRuxOptimizerReport, makeWalkForwardReport } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { buildRuleBuilderReport, updateRuleSet } from './rux_rulebuilder.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { makeForwardBreakdownReport } from './rux_journal.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, card, pageHead, tag, progress, checklist } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { canvasLineChart, canvasBarChart } from './charts.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { makeRuxBacktestSnapshot, makeRuxOptimizerReport, makeWalkForwardReport } from './rux_core.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { buildRuleBuilderReport, updateRuleSet } from './rux_rulebuilder.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { makeForwardBreakdownReport } from './rux_journal.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 function fmt(n, d = 2) {
   const x = Number(n);

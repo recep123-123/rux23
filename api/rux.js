@@ -3451,12 +3451,12 @@ HANDLERS['derivs'] = (() => {
     const interval = tf;
     const okxBar = ({ '5m':'5m', '15m':'15m', '1h':'1H', '4h':'4H', '1d':'1D', '1w':'1W' })[tf] || '15m';
     const profileMap = {
-      '5m':  { label:'5 dk', visibleCandles:96, fetchCandles:240, rangeLookback:54, rangePct:0.012, atrMult:2.8, stepMult:1, nearFocus:340, wallThreshold:0.84, voidThreshold:0.26, momentumLookback:22, retainNearBands:12, heatBands:34 },
-      '15m': { label:'15 dk', visibleCandles:88, fetchCandles:220, rangeLookback:66, rangePct:0.022, atrMult:3.4, stepMult:1, nearFocus:265, wallThreshold:0.80, voidThreshold:0.23, momentumLookback:20, retainNearBands:12, heatBands:30 },
-      '1h':  { label:'1 saat', visibleCandles:72, fetchCandles:210, rangeLookback:78, rangePct:0.045, atrMult:4.3, stepMult:2, nearFocus:175, wallThreshold:0.75, voidThreshold:0.19, momentumLookback:22, retainNearBands:13, heatBands:24 },
-      '4h':  { label:'4 saat', visibleCandles:58, fetchCandles:200, rangeLookback:92, rangePct:0.100, atrMult:5.4, stepMult:5, nearFocus:112, wallThreshold:0.71, voidThreshold:0.16, momentumLookback:26, retainNearBands:14, heatBands:20 },
-      '1d':  { label:'1 gün', visibleCandles:42, fetchCandles:170, rangeLookback:82, rangePct:0.210, atrMult:6.4, stepMult:10, nearFocus:70, wallThreshold:0.67, voidThreshold:0.13, momentumLookback:18, retainNearBands:16, heatBands:16 },
-      '1w':  { label:'1 hafta', visibleCandles:26, fetchCandles:130, rangeLookback:52, rangePct:0.380, atrMult:7.6, stepMult:22, nearFocus:42, wallThreshold:0.62, voidThreshold:0.10, momentumLookback:10, retainNearBands:18, heatBands:12 }
+      '5m':  { label:'5 dk', visibleCandles:108, fetchCandles:320, rangeLookback:62, rangePct:0.009, atrMult:2.2, stepMult:1, nearFocus:440, wallThreshold:0.86, voidThreshold:0.28, momentumLookback:28, retainNearBands:10, heatBands:42 },
+      '15m': { label:'15 dk', visibleCandles:96, fetchCandles:280, rangeLookback:70, rangePct:0.018, atrMult:2.9, stepMult:1, nearFocus:315, wallThreshold:0.82, voidThreshold:0.24, momentumLookback:24, retainNearBands:11, heatBands:35 },
+      '1h':  { label:'1 saat', visibleCandles:82, fetchCandles:240, rangeLookback:84, rangePct:0.036, atrMult:4.1, stepMult:2, nearFocus:188, wallThreshold:0.77, voidThreshold:0.18, momentumLookback:26, retainNearBands:12, heatBands:26 },
+      '4h':  { label:'4 saat', visibleCandles:64, fetchCandles:220, rangeLookback:96, rangePct:0.108, atrMult:5.8, stepMult:6, nearFocus:112, wallThreshold:0.72, voidThreshold:0.15, momentumLookback:24, retainNearBands:14, heatBands:20 },
+      '1d':  { label:'1 gün', visibleCandles:46, fetchCandles:190, rangeLookback:92, rangePct:0.265, atrMult:7.0, stepMult:12, nearFocus:68, wallThreshold:0.66, voidThreshold:0.12, momentumLookback:18, retainNearBands:16, heatBands:14 },
+      '1w':  { label:'1 hafta', visibleCandles:24, fetchCandles:140, rangeLookback:56, rangePct:0.560, atrMult:8.4, stepMult:28, nearFocus:38, wallThreshold:0.60, voidThreshold:0.09, momentumLookback:10, retainNearBands:18, heatBands:8 }
     };
     const profile = profileMap[tf] || profileMap['15m'];
     const okxId = okxInst(symbol);
@@ -3534,7 +3534,7 @@ HANDLERS['derivs'] = (() => {
       : [];
     if (!rawCandles.length && Array.isArray(okCandles?.data)) rawCandles = okCandles.data.map(c => ({ time:n(c[0]), open:n(c[1]), high:n(c[2]), low:n(c[3]), close:n(c[4]), volume:n(c[5]) })).reverse();
     if (!price && rawCandles.length) price = rawCandles.at(-1).close;
-    out.candles = rawCandles.slice(-Math.max(profile.visibleCandles, 72));
+    out.candles = rawCandles.slice(-Math.max(profile.visibleCandles, tf === '5m' ? 108 : tf === '15m' ? 96 : tf === '1h' ? 82 : tf === '4h' ? 64 : tf === '1d' ? 46 : 24));
     out.chartWindow = profile.visibleCandles;
     out.windowLabel = profile.label;
     out.timeframe = tf;
@@ -3553,7 +3553,7 @@ HANDLERS['derivs'] = (() => {
       return Math.max(Math.abs(c.high - c.low), Math.abs(c.high - prevClose), Math.abs(c.low - prevClose));
     });
     const atr = avgOf(trueRanges.slice(-Math.min(14, trueRanges.length))) || price * profile.rangePct * 0.35;
-    const rangePad = Math.max(price * profile.rangePct, atr * profile.atrMult, price * 0.0035 * profile.stepMult);
+    const rangePad = Math.max(price * profile.rangePct, atr * profile.atrMult, price * 0.0035 * profile.stepMult) * (tf === '1w' ? 1.25 : tf === '1d' ? 1.13 : tf === '1h' ? 0.96 : 1);
     const lowFromCandles = candleView.length ? Math.min(...candleView.map(c => c.low)) : price - rangePad * 0.8;
     const highFromCandles = candleView.length ? Math.max(...candleView.map(c => c.high)) : price + rangePad * 0.8;
     let low = Math.min(price - rangePad, lowFromCandles - rangePad * 0.22);
@@ -3563,8 +3563,8 @@ HANDLERS['derivs'] = (() => {
     const baseStep = stepForPrice(price);
     let step = Math.max(baseStep, baseStep * profile.stepMult);
     let span = high - low;
-    while (span / step > 96) step *= 2;
-    while (span / step < 26 && step > baseStep) step = Math.max(baseStep, step / 2);
+    while (span / step > (tf === '1w' ? 48 : tf === '1d' ? 60 : tf === '4h' ? 74 : 96)) step *= 2;
+    while (span / step < (tf === '1w' ? 18 : tf === '1d' ? 22 : 26) && step > baseStep) step = Math.max(baseStep, step / 2);
 
     const bands = new Map();
     function bandOf(p) { return roundStep(p, step); }
@@ -3622,7 +3622,7 @@ HANDLERS['derivs'] = (() => {
     const venuesMap = new Map();
     [...allBids, ...allAsks].forEach(r => venuesMap.set(r.venue, (venuesMap.get(r.venue) || 0) + r.usd));
     const venues = Array.from(venuesMap.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-    const ladder = levels.slice().sort((a, b) => Math.abs(a.price - price) - Math.abs(b.price - price)).slice(0, 8).map(x => ({ price:x.price, bidUsd:x.bidUsd, askUsd:x.askUsd, totalUsd:x.totalUsd }));
+    const ladder = levels.slice().sort((a, b) => Math.abs(a.price - price) - Math.abs(b.price - price)).slice(0, tf === '1w' ? 5 : 8).map(x => ({ price:x.price, bidUsd:x.bidUsd, askUsd:x.askUsd, totalUsd:x.totalUsd }));
 
     const closes = out.candles.map(c => c.close);
     const last = closes.at(-1) || price;

@@ -1,5 +1,5 @@
 /* RUx — Chart helpers (Lightweight Charts) */
-import { fmtPrice, ema } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { fmtPrice, ema } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 const _LWC = () => (window.LightweightCharts || null);
 

@@ -1,6 +1,6 @@
 /* RUx — Analiz modülleri: volatilite, korelasyon, döngü, akış, on-chain */
-import { State, el, fetchMarket, toast, atr, ema, rsi } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, sparkline } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { State, el, fetchMarket, toast, atr, ema, rsi } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, sparkline } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 function clamp(v, a=0, b=100) { return Math.min(b, Math.max(a, v)); }
 

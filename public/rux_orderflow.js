@@ -1,7 +1,7 @@
 /* RUx — Order Flow / CVD Kaynak Şeffaflığı */
-import { el, fetchCVD, fetchLiquidity, fetchFutures } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { card, barbar, checklist, tag } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { getOrderflowScoreMode, orderflowScoreModeLabel } from './rux_settings.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { el, fetchCVD, fetchLiquidity, fetchFutures } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { card, barbar, checklist, tag } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { getOrderflowScoreMode, orderflowScoreModeLabel } from './rux_settings.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 function num(v, d = null) {
   const n = Number(v);

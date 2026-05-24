@@ -1,8 +1,8 @@
 /* RUx — Setup Performans Matrisi ekranı */
-import { el, State, fetchMarket } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, card, pageHead, tag, barbar } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { makeRuxBacktestSnapshot } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { buildSetupPerformanceMatrixReport, compareSetupMatrixMode } from './rux_setup_matrix.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, card, pageHead, tag, barbar } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { makeRuxBacktestSnapshot } from './rux_core.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { buildSetupPerformanceMatrixReport, compareSetupMatrixMode } from './rux_setup_matrix.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 function fmtR(n, d = 2) {
   const v = Number(n || 0);

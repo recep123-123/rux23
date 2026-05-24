@@ -1,7 +1,7 @@
 /* RUx — ATR Yönetimi (image 16) */
-import { State, fetchMarket, el } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, card, pageHead, checklist } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { State, fetchMarket, el } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, card, pageHead, checklist } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 export async function renderAtr(host) {
   host.innerHTML = '';

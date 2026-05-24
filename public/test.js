@@ -1,9 +1,9 @@
 /* RUx — Backtest İşlem Günlüğü (version: see rux_version.js) */
-import { el, State, fetchMarket, fmtPrice } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { canvasLineChart, canvasBarChart } from './charts.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { makeRuxBacktestSnapshot, COST_PROFILES, getRuxCostProfile } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { buildRuleBuilderReport } from './rux_rulebuilder.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { el, State, fetchMarket, fmtPrice } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { canvasLineChart, canvasBarChart } from './charts.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { makeRuxBacktestSnapshot, COST_PROFILES, getRuxCostProfile } from './rux_core.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { buildRuleBuilderReport } from './rux_rulebuilder.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 function fmtR(n, d = 2) {
   const v = Number(n || 0);

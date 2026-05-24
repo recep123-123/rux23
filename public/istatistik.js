@@ -1,9 +1,9 @@
 /* RUx — İstatistik Performans Motoru */
-import { el, State, fetchMarket } from './api.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { canvasLineChart, canvasBarChart, canvasHeatmap } from './charts.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { makeStatisticsPerformanceReport } from './rux_core.js?v=0.75.14-heatmap-micro-polish-20260524';
-import { makeForwardJournalReport, formatJournalR } from './rux_journal.js?v=0.75.14-heatmap-micro-polish-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { canvasLineChart, canvasBarChart, canvasHeatmap } from './charts.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { makeStatisticsPerformanceReport } from './rux_core.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { makeForwardJournalReport, formatJournalR } from './rux_journal.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
 
 function fmtR(n, d = 2) {
   const v = Number(n || 0);
