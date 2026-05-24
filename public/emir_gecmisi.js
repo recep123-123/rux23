@@ -1,8 +1,8 @@
 /* RUx — Emir Geçmişi / Coin bazlı kullanıcı uygulama sadakati */
-import { el, fmtPrice, fetchMarket } from './api.js?v=0.75.2-funding-responsive-live-20260524';
-import { ICN, statCard, card, pageHead, coinPill, donut, barbar } from './components.js?v=0.75.2-funding-responsive-live-20260524';
-import { canvasLineChart } from './charts.js?v=0.75.2-funding-responsive-live-20260524';
-import { makeOrderHistoryReport } from './rux_core.js?v=0.75.2-funding-responsive-live-20260524';
+import { el, fmtPrice, fetchMarket } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { ICN, statCard, card, pageHead, coinPill, donut, barbar } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { canvasLineChart } from './charts.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { makeOrderHistoryReport } from './rux_core.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
 
 function money(n) {
   const v = Number(n);

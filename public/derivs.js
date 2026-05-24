@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.2-funding-responsive-live-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.2-funding-responsive-live-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];
@@ -1670,18 +1670,28 @@ export async function renderDerivsCVD(host) {
     const wrap = el('div', { class: 'cvd-chart-wrap cvd-mini-line-chart' });
     const len = Math.min(a.length, b.length);
     if (len < 2) { wrap.appendChild(el('div', { class: 'cvd-empty' }, 'Yeterli karşılaştırma verisi yok.')); return wrap; }
-    const av = a.slice(-len).map(x => Number(x));
-    const bv = b.slice(-len).map(x => Number(x));
+    const rawA = a.slice(-len).map(x => Number(x)).filter(Number.isFinite);
+    const rawB = b.slice(-len).map(x => Number(x)).filter(Number.isFinite);
+    const rebaseNorm = (vals) => {
+      if (vals.length < 2) return vals;
+      const base = vals[0] || 0;
+      const rebased = vals.map(v => v - base);
+      const mn = Math.min(...rebased), mx = Math.max(...rebased);
+      const range = (mx - mn) || 1;
+      return rebased.map(v => ((v - mn) / range) * 2 - 1);
+    };
+    const av = rebaseNorm(rawA);
+    const bv = rebaseNorm(rawB);
     const W = 860, H = 122, L = 36, R = 14, T = 10, B = 18;
     const { svg, n } = mkSvg(W, H);
     const plotW = W - L - R, plotH = H - T - B;
     const merged = av.concat(bv);
-    const rg = normalizeSeries(merged, .08, .08);
+    const rg = normalizeSeries(merged, .10, .10);
     const toX = (i, total) => L + (i / Math.max(1, total - 1)) * plotW;
     const toY = (v) => T + (1 - ((v - rg.min) / ((rg.max - rg.min) || 1))) * plotH;
-    const poly = (vals, stroke) => vals.map((v, i) => `${toX(i, vals.length).toFixed(1)},${toY(v).toFixed(1)}`).join(' ');
-    svg.appendChild(n('polyline', { points: poly(av, '#238dff'), fill: 'none', stroke: '#238dff', 'stroke-width': 2.2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
-    svg.appendChild(n('polyline', { points: poly(bv, '#10e8a3'), fill: 'none', stroke: '#10e8a3', 'stroke-width': 2.2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+    const poly = (vals) => vals.map((v, i) => `${toX(i, vals.length).toFixed(1)},${toY(v).toFixed(1)}`).join(' ');
+    svg.appendChild(n('polyline', { points: poly(av), fill: 'none', stroke: '#238dff', 'stroke-width': 2.2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+    svg.appendChild(n('polyline', { points: poly(bv), fill: 'none', stroke: '#10e8a3', 'stroke-width': 2.2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
     wrap.appendChild(svg);
     return wrap;
   };
@@ -1863,15 +1873,7 @@ export async function renderDerivsCVD(host) {
           el('div', { class: 'cvd-page-title' }, 'CVD Paneli'),
           el('div', { class: 'cvd-page-subtitle' }, 'Agresif alıcı-satıcı dengesi, absorpsiyon ve delta akışı')
         )
-      ),
-      el('div', { class: 'cvd-status-row' },
-        statusChip('Veri Kaynağı', 'Gerçek Zamanlı', 'pos'),
-        statusChip('Sembol', currentSymbol() + ' Perp'),
-        statusChip('Zaman Dilimi', periodLabel(tfNow)),
-        statusChip('Order Flow Rejimi', regimeLabel, priceTrend >= 0 && cvdTrend >= 0 ? 'pos' : priceTrend < 0 && cvdTrend < 0 ? 'neg' : 'warn'),
-        statusChip('Uyarı Durumu', warningCount + ' Uyarı', warningCount ? 'warn' : 'pos')
-      ),
-      el('div', { class: 'cvd-top-icons' }, el('span', {}, '🔔', el('b', {}, String(Math.max(1, warningCount)))), el('span', {}, '⚙'), el('span', {}, '⤢'))
+      )
     ));
 
     const kpiRow = el('div', { class: 'cvd-kpi-row' });

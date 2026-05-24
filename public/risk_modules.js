@@ -1,6 +1,6 @@
 /* RUx — Risk modülleri: stop yönetimi, drawdown, portföy risk, korelasyon izleme, sermaye koruma, portföy backtest */
-import { State, el, fmtPct, toast, fetchMarket, atr, ema } from './api.js?v=0.75.2-funding-responsive-live-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, sparkline } from './components.js?v=0.75.2-funding-responsive-live-20260524';
+import { State, el, fmtPct, toast, fetchMarket, atr, ema } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, sparkline } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
 
 /* ====================== STOP YÖNETİMİ ====================== */
 export async function renderStop(host) {

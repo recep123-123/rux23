@@ -1,8 +1,8 @@
 /* RUx — Piyasa altı modülleri: harita, sektör, likidasyon, ısı, endeks, makro */
-import { el, fetchMarket, fmtPct, fmtPrice, fmtNum } from './api.js?v=0.75.2-funding-responsive-live-20260524';
-import { ICN, statCard, card, pageHead, tag, barbar, heatColorClass, heatmapRow } from './components.js?v=0.75.2-funding-responsive-live-20260524';
-import { upcomingMacroEvents, evaluateMacroEventRisk } from './rux_macro.js?v=0.75.2-funding-responsive-live-20260524';
-import { fetchEconCalendar } from './api.js?v=0.75.2-funding-responsive-live-20260524';
+import { el, fetchMarket, fmtPct, fmtPrice, fmtNum } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { ICN, statCard, card, pageHead, tag, barbar, heatColorClass, heatmapRow } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { upcomingMacroEvents, evaluateMacroEventRisk } from './rux_macro.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { fetchEconCalendar } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
 
 const TRACKED = ['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT','ADAUSDT','AVAXUSDT','LINKUSDT','DOGEUSDT','OPUSDT','ARBUSDT','APTUSDT','SUIUSDT','TONUSDT','NEARUSDT','INJUSDT','RNDRUSDT','TIAUSDT','SEIUSDT','ATOMUSDT'];
 

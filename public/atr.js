@@ -1,7 +1,7 @@
 /* RUx — ATR Yönetimi (image 16) */
-import { State, fetchMarket, el } from './api.js?v=0.75.2-funding-responsive-live-20260524';
-import { ICN, statCard, card, pageHead, checklist } from './components.js?v=0.75.2-funding-responsive-live-20260524';
-import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.2-funding-responsive-live-20260524';
+import { State, fetchMarket, el } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { ICN, statCard, card, pageHead, checklist } from './components.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
 
 export async function renderAtr(host) {
   host.innerHTML = '';

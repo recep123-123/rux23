@@ -1,6 +1,6 @@
 /* RUx — Adapter Diagnostics Panel */
-import { el, State, fmtPrice, fmtTime } from './api.js?v=0.75.2-funding-responsive-live-20260524';
-import { runAdapterDiagnostics, loadLastUnifiedMarketData, exportAdapterDiagnostics, RUX_UNIFIED_MARKET_SCHEMA } from './rux_data_adapters.js?v=0.75.2-funding-responsive-live-20260524';
+import { el, State, fmtPrice, fmtTime } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
+import { runAdapterDiagnostics, loadLastUnifiedMarketData, exportAdapterDiagnostics, RUX_UNIFIED_MARKET_SCHEMA } from './rux_data_adapters.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
 
 const toneMap = { LIVE:'pos', FALLBACK:'warn', STALE:'warn', OFFLINE:'neg', OPTIONAL_OFFLINE:'muted' };
 function clsForMode(mode) { return toneMap[String(mode||'').toUpperCase()] || 'muted'; }

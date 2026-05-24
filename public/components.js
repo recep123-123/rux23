@@ -1,5 +1,5 @@
 /* RUx — UI components */
-import { el, svg, fmtNum, fmtPrice, fmtPct, coinClass, coinShort, coinName } from './api.js?v=0.75.2-funding-responsive-live-20260524';
+import { el, svg, fmtNum, fmtPrice, fmtPct, coinClass, coinShort, coinName } from './api.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
 
 /* ---- ICONS (lightweight inline SVG) ---- */
 export const ICN = {

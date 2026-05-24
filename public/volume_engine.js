@@ -42,7 +42,7 @@
  *   - Day type yalnızca kapanmış seans için kesin
  */
 
-import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.2-funding-responsive-live-20260524';
+import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.4-cvd-headerfix-overflowfix-20260524';
 
 /* ───────── Yardımcılar ───────── */
 function num(x){ return Number.isFinite(Number(x)) ? Number(x) : NaN; }
