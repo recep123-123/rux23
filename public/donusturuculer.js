@@ -1,6 +1,6 @@
 /* RUx — Dönüştürücüler (real working converters) */
-import { State, el, fetchMarket, toast } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { State, el, fetchMarket, toast } from './api.js?v=0.75.7-liquidation-source-health-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.7-liquidation-source-health-20260524';
 
 let liveBtcUsd = 0;
 let liveEthUsd = 0;

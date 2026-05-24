@@ -3430,9 +3430,12 @@ HANDLERS['derivs'] = (() => {
       binance: out.byExchange.Binance || { longLiqUsd:0, shortLiqUsd:0, total:0, count:0 },
       okx: out.byExchange.OKX || { longLiqUsd:0, shortLiqUsd:0, total:0, count:0 }
     };
-    out.source = Object.keys(out.byExchange).join('+') || 'none';
+    const liveProviders = out.dataStatus.filter(s => s.status === 'live').map(s => `${s.provider}(${s.rows || 0})`);
+    const activeEventProviders = Object.keys(out.byExchange);
+    out.activeEventSources = activeEventProviders;
+    out.source = liveProviders.join('+') || activeEventProviders.join('+') || 'none';
     out.ok = out.recent.length > 0;
-    out.dataQuality = out.ok ? (Object.keys(out.byExchange).length >= 2 ? 'live' : 'degraded') : 'offline';
+    out.dataQuality = out.ok ? (activeEventProviders.length >= 2 ? 'live' : 'degraded') : (liveProviders.length ? 'degraded' : 'offline');
     return out;
   }
 

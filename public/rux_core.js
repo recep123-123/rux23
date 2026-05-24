@@ -2,7 +2,7 @@
    Master Trade Framework risk dayanıklılığı katmanını mevcut terminal görselini bozmadan görünür hale getirir.
    Bu dosya otomatik emir göndermez; yalnızca karar destek, sinyal doğrulama ve test hesapları sağlar. */
 
-export const RUX_VERSION = '0.75.6-liquidation-compact-trusted-20260524';
+export const RUX_VERSION = '0.75.7-liquidation-source-health-20260524';
 
 export const RUX_TERMS_TR = Object.freeze({
   dataConfidence: 'Veri Güveni',
@@ -1382,7 +1382,7 @@ function _noSignalResult(symbol, tf, marketData, reason, warning) {
 }
 
 export function analyzeLiveMarketSignal({ symbol = 'BTCUSDT', tf = '4h', marketData = null, previousRegime = null } = {}) {
-  // KARAR YOLU SENTETİK VERİ YASAĞI (v0.75.6-liquidation-compact-trusted-20260524 Hiçbir ekran demo/sentetik mumu
+  // KARAR YOLU SENTETİK VERİ YASAĞI (v0.75.7-liquidation-source-health-20260524 Hiçbir ekran demo/sentetik mumu
   // canlı veri gibi karar motoruna sokamaz. marketData.synthetic veya
   // decisionEligible===false ise sinyal üretilmez.
   if (marketData && (marketData.synthetic === true || marketData.decisionEligible === false)) {

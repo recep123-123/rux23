@@ -1,7 +1,7 @@
 /* RUx — Order Flow / CVD Kaynakları ayrı ekran */
-import { el, testApiEndpoint } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { getOrderflowScoreMode, orderflowScoreModeLabel } from './rux_settings.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { el, testApiEndpoint } from './api.js?v=0.75.7-liquidation-source-health-20260524';
+import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.7-liquidation-source-health-20260524';
+import { getOrderflowScoreMode, orderflowScoreModeLabel } from './rux_settings.js?v=0.75.7-liquidation-source-health-20260524';
 
 const SOURCES = [
   { name: 'CVD / Delta Proxy', kind: 'Proxy', provider: 'Binance/Market OHLCV', path: '/api/market?symbol=BTCUSDT&tf=4h&limit=120', note: 'Hazır kurumsal footprint değil; taker/mum bazlı proxy.' },

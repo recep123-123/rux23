@@ -1,9 +1,9 @@
 /* RUx — Sinyal Detay Live Retrofit */
-import { State, fetchMarket, el, fmtPct, fmtPrice, coinName, toast } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { ICN, card, pageHead, ringGauge, checklist, barbar } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { analyzeLiveMarketSignal, statusClass } from './rux_core.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { triggerAddAlertFlow, addToWatchlist } from './rux_actions.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { State, fetchMarket, el, fmtPct, fmtPrice, coinName, toast } from './api.js?v=0.75.7-liquidation-source-health-20260524';
+import { ICN, card, pageHead, ringGauge, checklist, barbar } from './components.js?v=0.75.7-liquidation-source-health-20260524';
+import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.7-liquidation-source-health-20260524';
+import { analyzeLiveMarketSignal, statusClass } from './rux_core.js?v=0.75.7-liquidation-source-health-20260524';
+import { triggerAddAlertFlow, addToWatchlist } from './rux_actions.js?v=0.75.7-liquidation-source-health-20260524';
 
 function cleanDirection(direction = '', blocked = false) {
   if (blocked) return 'SİNYAL YOK / BLOKE';

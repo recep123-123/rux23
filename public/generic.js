@@ -1,6 +1,6 @@
 /* RUx — Generic fallback page */
-import { el } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { el } from './api.js?v=0.75.7-liquidation-source-health-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.7-liquidation-source-health-20260524';
 
 export async function renderGenericPage(host, pageId) {
   host.innerHTML = '';

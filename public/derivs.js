@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.7-liquidation-source-health-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.7-liquidation-source-health-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];
@@ -2108,7 +2108,19 @@ export async function renderDerivsLiq(host) {
     const biggest=events.reduce((b,e)=>e.usd>(b?.usd||0)?e:b,null);
     const candles=(market?.candles||market?.ohlcv||[]).filter(c=>Number.isFinite(num(c.close))); const currentPrice=num(candles.at(-1)?.close || events[0]?.price, 0);
     const closes=candles.map(c=>num(c.close));
-    const exMap=new Map(); events.forEach(e=>{ const v=exMap.get(e.exchange)||0; exMap.set(e.exchange,v+e.usd); }); const exItems=[...exMap.entries()].map(([name,value])=>({name,value})).sort((a,b)=>b.value-a.value);
+    const exMap=new Map(); events.forEach(e=>{ const v=exMap.get(e.exchange)||0; exMap.set(e.exchange,v+e.usd); });
+    const liqStatus = Array.isArray(d?.dataStatus) ? d.dataStatus.filter(x => String(x.key||'').includes('liq') || ['Binance','Bybit','OKX'].includes(String(x.provider||''))) : [];
+    const statusByProvider = new Map(liqStatus.map(x => [String(x.provider || '').trim(), x]));
+    const baseProviders = ['Binance', 'Bybit', 'OKX'];
+    const exItems = baseProviders.map(name => {
+      const st = statusByProvider.get(name) || {};
+      const value = exMap.get(name) || 0;
+      const rows = Number(st.rows || 0);
+      const status = st.status || (value > 0 ? 'live' : 'no-event');
+      return { name, value, rows, status, note: st.note || '' };
+    }).filter(it => it.status !== 'offline' || it.rows > 0 || it.value > 0 || statusByProvider.has(it.name)).sort((a,b)=>b.value-a.value || (b.rows||0)-(a.rows||0));
+    const eventSourceCount = exItems.filter(x => x.value > 0).length;
+    const liveNoEventCount = exItems.filter(x => x.status === 'live' && x.value <= 0).length;
     const minP=Math.min(...events.map(e=>e.price), currentPrice||Infinity), maxP=Math.max(...events.map(e=>e.price), currentPrice||0); const bands=9; const step=Math.max(1,(maxP-minP)/Math.max(1,bands-1));
     const clusters=Array.from({length:bands},(_,i)=>({ price:maxP-i*step, longUsd:0, shortUsd:0, net:0, total:0 })); events.forEach(e=>{ const idx=clusters.reduce((best,c,i)=>Math.abs(c.price-e.price)<Math.abs(clusters[best].price-e.price)?i:best,0); if(e.liquidatedSide==='Long') clusters[idx].longUsd+=e.usd; else clusters[idx].shortUsd+=e.usd; clusters[idx].total+=e.usd; clusters[idx].net=clusters[idx].longUsd-clusters[idx].shortUsd; });
     const regime = squeezeScore>=65?'Short Squeeze':squeezeScore<=35?'Long Flush':'Dengeli Tasfiye'; const regimeTone=squeezeScore>=65?'neg':squeezeScore<=35?'pos':'warn';
@@ -2117,11 +2129,11 @@ export async function renderDerivsLiq(host) {
     root.appendChild(el('div',{class:'liq-topbar liq-topbar-compact'},el('div',{class:'liq-titlebar'},el('div',{class:'liq-logo'},'LX'),el('div',{},el('div',{class:'liq-title'},'Likidasyon Paneli'),el('div',{class:'liq-subtitle'},'Gerçekleşen tasfiyeler, squeeze baskısı ve borsa bazlı dağılım')))));
     root.appendChild(el('div',{class:'liq-kpi-row'},kpi('TOPLAM LİKİDASYON',fmtUsd(totalUsd,2),'+ canlı pencere','pos',events.slice(0,25).reverse().map(e=>e.usd)),kpi('LONG TASFİYE',fmtUsd(longUsd,2),pct(totalUsd?longUsd/totalUsd*100:0),'pos',events.filter(e=>e.liquidatedSide==='Long').slice(0,25).reverse().map(e=>e.usd)),kpi('SHORT TASFİYE',fmtUsd(shortUsd,2),pct(totalUsd?shortUsd/totalUsd*100:0),'neg',events.filter(e=>e.liquidatedSide==='Short').slice(0,25).reverse().map(e=>e.usd)),kpi('NET SQUEEZE SKORU',(netScore>=0?'+':'')+netScore.toFixed(2),netScore>=0?'Short baskın':'Long baskın',netScore>=0?'pos':'neg',closes.slice(-25)),kpi('EN BÜYÜK OLAY',fmtUsd(biggest?.usd||0,2),(biggest?.exchange||'—')+' · '+new Date(biggest?.time||Date.now()).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}),'warn',events.slice(0,25).map(e=>e.usd)),kpi('BASKIN REJİM',regime,Math.abs(netScore)>.35?'Aşırı Risk':'Kontrollü',regimeTone,closes.slice(-25))));
 
-    const comments=[`${biggest?.exchange||'Borsa'} tarafında ${fmtUsd(biggest?.usd,2)} büyüklüğünde tasfiye olayı öne çıkıyor.`, `Net squeeze skoru ${(netScore>=0?'+':'')+netScore.toFixed(2)}; ${netScore>=0?'short squeeze riski':'long flush baskısı'} izleniyor.`, `${exItems.length} doğrulanmış canlı kaynak üzerinden dağılım derlendi.`, `Likidasyon akışı ${regime.toLowerCase()} rejimini destekliyor.`];
+    const comments=[`${biggest?.exchange||'Borsa'} tarafında ${fmtUsd(biggest?.usd,2)} büyüklüğünde tasfiye olayı öne çıkıyor.`, `Net squeeze skoru ${(netScore>=0?'+':'')+netScore.toFixed(2)}; ${netScore>=0?'short squeeze riski':'long flush baskısı'} izleniyor.`, `${eventSourceCount} kaynakta seçili pencerede olay var; ${liveNoEventCount} canlı kaynakta bu pencerede olay yok.`, `Likidasyon akışı ${regime.toLowerCase()} rejimini destekliyor.`];
     const tape=events.slice(0,11);
     root.appendChild(el('div',{class:'liq-grid'},
       el('div',{class:'liq-card liq-clusters'},el('div',{class:'liq-card-head'},el('div',{class:'liq-card-title'},'Gerçekleşmiş Likidasyon Kümeleri'),el('span',{},'Fiyat Bantları')),bandChart(clusters,currentPrice)),
-      el('div',{class:'liq-card liq-distribution'},el('div',{class:'liq-card-title'},'Borsa Bazlı Likidasyon Dağılımı'),el('div',{class:'liq-donut-layout'},donut(exItems),el('div',{class:'liq-ex-list'},...exItems.map((it,i)=>el('div',{class:'liq-ex-row'},el('i',{}),el('span',{},it.name),el('b',{},pct(it.value/totalUsd*100,1)),el('strong',{},fmtUsd(it.value,2)))))),el('div',{class:'liq-total-row'},'Toplam ',el('b',{},fmtUsd(totalUsd,2)))),
+      el('div',{class:'liq-card liq-distribution'},el('div',{class:'liq-card-title'},'Borsa Bazlı Likidasyon Dağılımı'),el('div',{class:'liq-donut-layout'},donut(exItems.filter(it=>it.value>0)),el('div',{class:'liq-ex-list'},...exItems.map((it,i)=>el('div',{class:'liq-ex-row '+(it.value>0?'live':'inactive')},el('i',{}),el('span',{},it.name),el('b',{},totalUsd ? pct(it.value/totalUsd*100,1) : (it.status==='live'?'0 olay':'—')),el('strong',{},it.value>0 ? fmtUsd(it.value,2) : (it.status==='live'?'canlı · 0':'veri yok')))))),el('div',{class:'liq-total-row'},'Toplam ',el('b',{},fmtUsd(totalUsd,2)))),
       el('div',{class:'liq-card liq-comments'},el('div',{class:'liq-card-title'},'Tek Bakışta Yorum'),el('div',{class:'liq-comment-list'},...comments.map((c,i)=>el('div',{class:'liq-comment-item '+(i===0?'neg':'pos')},el('span',{},'●'),el('p',{},c)))),el('div',{class:'liq-regime-box'},el('span',{},'Genel Rejim'),el('b',{class:regimeTone},regime),gauge(squeezeScore,'Squeeze Riski'))),
       el('div',{class:'liq-card liq-flow'},el('div',{class:'liq-card-head'},el('div',{class:'liq-card-title'},'Likidasyon Zaman Akışı'),el('span',{},'Baloncuk Boyutu: Tutar (USD)')),bubbleChart(events)),
       el('div',{class:'liq-card liq-risk'},el('div',{class:'liq-card-title'},'Squeeze Risk Göstergesi'),gauge(squeezeScore, squeezeScore>=50?'Short Squeeze Riski':'Long Flush Riski')),

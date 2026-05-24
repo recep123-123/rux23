@@ -1,7 +1,7 @@
 /* RUx — No-Trade Validation / Filtre Testi */
-import { el, State, fetchMarket, fmtNum } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { ICN, card, pageHead, statCard, tag } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { makeDemoCandles, analyzeLiveMarketSignal, simulateManualPlanOutcome } from './rux_core.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { el, State, fetchMarket, fmtNum } from './api.js?v=0.75.7-liquidation-source-health-20260524';
+import { ICN, card, pageHead, statCard, tag } from './components.js?v=0.75.7-liquidation-source-health-20260524';
+import { makeDemoCandles, analyzeLiveMarketSignal, simulateManualPlanOutcome } from './rux_core.js?v=0.75.7-liquidation-source-health-20260524';
 
 function round(n, d = 2) {
   const x = Number(n);

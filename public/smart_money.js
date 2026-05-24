@@ -1,9 +1,9 @@
 /* RUx — Smart Money Surgical Live */
-import { State, fetchMarket, fmtPrice, fmtPct, el, fmtTime, toast, coinName } from './api.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { ICN, statCard, card, pageHead, sparkline, donut, coinPill } from './components.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { addAlert, addToWatchlist } from './rux_actions.js?v=0.75.6-liquidation-compact-trusted-20260524';
-import { makeOrderflowCard } from './rux_orderflow.js?v=0.75.6-liquidation-compact-trusted-20260524';
+import { State, fetchMarket, fmtPrice, fmtPct, el, fmtTime, toast, coinName } from './api.js?v=0.75.7-liquidation-source-health-20260524';
+import { ICN, statCard, card, pageHead, sparkline, donut, coinPill } from './components.js?v=0.75.7-liquidation-source-health-20260524';
+import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.7-liquidation-source-health-20260524';
+import { addAlert, addToWatchlist } from './rux_actions.js?v=0.75.7-liquidation-source-health-20260524';
+import { makeOrderflowCard } from './rux_orderflow.js?v=0.75.7-liquidation-source-health-20260524';
 
 function fmtCompact(n, d = 2) {
   const x = Number(n);
