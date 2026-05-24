@@ -1,6 +1,6 @@
 /* RUx — Bugün İşlem? (image 15) */
-import { State, el, fmtPct } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, coinPill, checklist, barbar } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
+import { State, el, fmtPct } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, coinPill, checklist, barbar } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
 
 export async function renderBugun(host) {
   host.innerHTML = '';

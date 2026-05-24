@@ -1,6 +1,6 @@
 /* RUx — Pozisyon Büyüklüğü Hesaplayıcısı (real working calculator) */
-import { State, el, toast, fetchMarket } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
+import { State, el, toast, fetchMarket } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
 
 const LS_KEY = 'rux.posSize.v1';
 

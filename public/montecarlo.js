@@ -1,8 +1,8 @@
 /* RUx — Signal Replay & Trade Timeline Viewer */
-import { el, State, fetchMarket } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
-import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
-import { canvasLineChart, canvasBarChart } from './charts.js?v=0.75.8-heatmap-panel-live-20260524';
-import { makeMonteCarloStabilityReport } from './rux_monte_carlo.js?v=0.75.8-heatmap-panel-live-20260524';
+import { el, State, fetchMarket } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { ICN, statCard, card, pageHead, tag } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { canvasLineChart, canvasBarChart } from './charts.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { makeMonteCarloStabilityReport } from './rux_monte_carlo.js?v=0.75.9-heatmap-premium-rework-20260524';
 
 function fmtR(n, d = 2) {
   const v = Number(n || 0);
@@ -54,7 +54,7 @@ export async function renderMontecarlo(host) {
   const tf = State.tf || '4h';
   host.appendChild(pageHead({
     title: 'MONTE CARLO / RISK-OF-RUIN PANELİ',
-    subtitle: 'RUx v0.75.8-heatmap-panel-live-20260524 aynı Net-R işlem dizisini 1000+ farklı sırayla karıştırır; drawdown dağılımı, ruin riski ve stability skorunu birlikte ölçer.',
+    subtitle: 'RUx v0.75.9-heatmap-premium-rework-20260524 aynı Net-R işlem dizisini 1000+ farklı sırayla karıştırır; drawdown dağılımı, ruin riski ve stability skorunu birlikte ölçer.',
     actions: [
       el('div', { class: 'select' }, symbol.replace('USDT','/USDT'), ' ', ICN.chev(10)),
       el('div', { class: 'select' }, tf, ' ', ICN.chev(10)),
@@ -63,7 +63,7 @@ export async function renderMontecarlo(host) {
     ]
   }));
 
-  const loading = el('div', { class: 'card section' }, el('div', { class: 'card-title' }, 'RUx v0.75.8-heatmap-panel-live-20260524 Monte Carlo motoru çalışıyor…'));
+  const loading = el('div', { class: 'card section' }, el('div', { class: 'card-title' }, 'RUx v0.75.9-heatmap-premium-rework-20260524 Monte Carlo motoru çalışıyor…'));
   host.appendChild(loading);
   const market = await fetchMarket(symbol, tf, 640);
   const rep = makeMonteCarloStabilityReport({ marketData: market, symbol, tf, iterations: 1000, ruinThresholdR: -10 });

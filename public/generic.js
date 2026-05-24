@@ -1,6 +1,6 @@
 /* RUx — Generic fallback page */
-import { el } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
-import { ICN, statCard, card, pageHead } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
+import { el } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { ICN, statCard, card, pageHead } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
 
 export async function renderGenericPage(host, pageId) {
   host.innerHTML = '';

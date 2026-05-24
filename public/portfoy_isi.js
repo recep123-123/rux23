@@ -1,8 +1,8 @@
 /* RUx — Portfolio Heat v2 ekranı */
-import { el, State, fetchMarket, fmtPrice } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
-import { ICN, statCard, card, pageHead, tag, barbar, donut } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
-import { canvasBarChart, canvasHeatmap } from './charts.js?v=0.75.8-heatmap-panel-live-20260524';
-import { buildPortfolioHeatV2Report, portfolioHeatScenarioList, portfolioHeatScenarioLabel } from './rux_portfolio_heat.js?v=0.75.8-heatmap-panel-live-20260524';
+import { el, State, fetchMarket, fmtPrice } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { ICN, statCard, card, pageHead, tag, barbar, donut } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { canvasBarChart, canvasHeatmap } from './charts.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { buildPortfolioHeatV2Report, portfolioHeatScenarioList, portfolioHeatScenarioLabel } from './rux_portfolio_heat.js?v=0.75.9-heatmap-premium-rework-20260524';
 
 const TRACKED = ['BTCUSDT','ETHUSDT','SOLUSDT','AVAXUSDT','LINKUSDT','BNBUSDT','OPUSDT','ARBUSDT'];
 

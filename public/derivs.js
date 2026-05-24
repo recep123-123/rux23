@@ -1,7 +1,7 @@
 /* RUx — Türev Veri (Derivatives): Open Interest, Funding, CVD, Likidasyon, Heatmap.
    Tümü ücretsiz borsa API'lerinden (Binance ana, Bybit/OKX ek). Backend /api/derivs. */
-import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
-import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
+import { State, fetchDerivs, fetchMarket, el, fmtPrice, fmtPct, fmtNum, toast } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { ICN, statCard, card, pageHead, tag, sparkline } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
 
 const PERIODS = ['5m', '15m', '1h', '4h'];
 const GLOBAL_PERIODS = ['5m', '15m', '1h', '4h', '1d', '1w'];
@@ -2271,18 +2271,41 @@ export async function renderDerivsHeatmap(host) {
     const total = Number(d.metrics?.totalLiquidityUsd || 0), strongest = d.metrics?.strongestWall, gap = d.metrics?.liquidityGap, magnet = d.metrics?.magnet;
     const imbalance = Number(d.metrics?.imbalancePct || 0); const risk = Number(d.riskScore || 50);
     const levelTotals=(d.levels||[]).map(x=>Number(x.totalUsd||0)); const closeVals=(d.candles||[]).map(x=>x.close);
-    const statusChips = [
-      ['Veri Kaynağı', (d.source || 'Canlı Order Book').includes('Binance') ? '● Gerçek Zamanlı' : '● Canlı'],
-      ['Sembol', currentSymbol() + ' Perp'],
-      ['Zaman Dilimi', getPeriod()],
-      ['Likidite Rejimi', '✳ ' + (d.liquidityRegime || 'Trend')],
-      ['Uyarı Durumu', '⚠ ' + Math.max(1, (d.alerts || []).length > 3 ? 2 : 1) + ' Uyarı']
-    ];
     root.appendChild(el('div',{class:'hm-topbar'},
-      el('div',{class:'hm-titlebar'},el('div',{class:'hm-logo'},'RX'),el('div',{},el('div',{class:'hm-title'},'Heatmap Paneli'),el('div',{class:'hm-subtitle'},'Likidite duvarları, boşluklar, mıknatıs seviyeleri ve yürütme bölgeleri'))),
-      el('div',{class:'hm-status-row'},...statusChips.map((b,i)=>el('div',{class:'hm-status-chip '+(i===0?'live':'')},el('span',{},b[0]),el('b',{},b[1])))),
-      el('div',{class:'hm-top-icons'},el('span',{},'♧'),el('span',{},'⚙'),el('span',{},'⛶'))
+      el('div',{class:'hm-titlebar'},
+        el('div',{class:'hm-logo'},'RX'),
+        el('div',{},
+          el('div',{class:'hm-title'},'Heatmap Paneli'),
+          el('div',{class:'hm-subtitle'},'Likidite duvarları, boşluklar, mıknatıs seviyeleri ve yürütme bölgeleri')
+        )
+      )
     ));
+
+    const sideComments = hmCard('Tek Bakışta Yorum',
+      el('div', { class: 'hm-comments' },
+        ...(d.comments || []).slice(0,5).map((c, i) => el('div', { class: 'hm-comment ' + (i === 2 ? 'neg' : i === 3 ? 'warn' : 'pos') },
+          el('span', {}, i === 3 ? '〽' : '●'),
+          el('p', {}, c)
+        ))
+      ),
+    'hm-comments-card');
+    const sideGauge = hmCard('Genel Likidite Durumu',
+      el('div', { class: 'hm-gauge-wrap' },
+        hmGauge(risk, risk > 68 ? 'GÜÇLÜ' : risk > 45 ? 'ORTA' : 'ZAYIF'),
+        el('small', {}, risk > 68 ? 'Likidite derin & sağlıklı' : 'Likidite rejimi izlenmeli')
+      ),
+    'hm-gauge-card');
+    const sideMicro = hmCard('Mikro Rejim',
+      el('div', { class: 'hm-micro' },
+        el('div', { class: 'hm-micro-top' },
+          el('b', {}, fmtPrice(d.currentPrice)),
+          el('span', { class: hmTone(d.priceChg24hPct) }, hmPct(d.priceChg24hPct, 2))
+        ),
+        hmDepthProfile({ ...d, levels: (d.levels || []).slice(0, 14) }),
+        el('strong', { class: imbalance < 0 ? 'neg' : 'pos' }, imbalance < 0 ? 'Satıcı Baskın' : 'Alıcı Baskın')
+      ),
+    'hm-micro-card');
+
     root.appendChild(el('div',{class:'hm-shell'},
       el('div',{class:'hm-main'},
         el('div',{class:'hm-kpi-row'},
@@ -2320,34 +2343,9 @@ export async function renderDerivsHeatmap(host) {
             ), 'hm-venue-card'),
           hmCard('Likidite Akış Göstergeleri', hmFlowList(d), 'hm-flow'),
           hmCard('Derinlik Profili (Heatmap Kesiti)', hmDepthProfile(d), 'hm-depth')
-        ),
-        el('div', { class: 'hm-side' },
-          hmCard('Tek Bakışta Yorum',
-            el('div', { class: 'hm-comments' },
-              ...(d.comments || []).map((c, i) => el('div', { class: 'hm-comment ' + (i === 2 ? 'neg' : i === 3 ? 'warn' : 'pos') },
-                el('span', {}, i === 3 ? '〽' : '●'),
-                el('p', {}, c)
-              ))
-            )
-          ),
-          hmCard('Genel Likidite Durumu',
-            el('div', { class: 'hm-gauge-wrap' },
-              hmGauge(risk, risk > 68 ? 'GÜÇLÜ' : risk > 45 ? 'ORTA' : 'ZAYIF'),
-              el('small', {}, risk > 68 ? 'Likidite derin & sağlıklı' : 'Likidite rejimi izlenmeli')
-            )
-          ),
-          hmCard('Mikro Rejim',
-            el('div', { class: 'hm-micro' },
-              el('div', { class: 'hm-micro-top' },
-                el('b', {}, fmtPrice(d.currentPrice)),
-                el('span', { class: hmTone(d.priceChg24hPct) }, hmPct(d.priceChg24hPct, 2))
-              ),
-              hmDepthProfile({ ...d, levels: (d.levels || []).slice(0, 14) }),
-              el('strong', { class: imbalance < 0 ? 'neg' : 'pos' }, imbalance < 0 ? 'Satıcı Baskın' : 'Alıcı Baskın')
-            )
-          )
         )
-      )
+      ),
+      el('div', { class: 'hm-side' }, sideComments, sideGauge, sideMicro)
     ));
     root.appendChild(hmSignalStrip(d));
   } catch (e) {

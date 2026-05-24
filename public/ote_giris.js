@@ -1,7 +1,7 @@
 /* RUx — OTE Giriş (image 18) */
-import { State, fetchMarket, el } from './api.js?v=0.75.8-heatmap-panel-live-20260524';
-import { ICN, statCard, card, pageHead, checklist } from './components.js?v=0.75.8-heatmap-panel-live-20260524';
-import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.8-heatmap-panel-live-20260524';
+import { State, fetchMarket, el } from './api.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { ICN, statCard, card, pageHead, checklist } from './components.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { makeCandleChart, addEmaLine, normalizeCandleInput } from './charts.js?v=0.75.9-heatmap-premium-rework-20260524';
 
 export async function renderOteGiris(host) {
   host.innerHTML = '';

@@ -7,14 +7,14 @@ import {
   makeEdgeCalibrationReport,
   makeBacktestOosValidationReport,
   summarizeBacktestRows
-} from './rux_core.js?v=0.75.8-heatmap-panel-live-20260524';
-import { buildSetupPerformanceMatrixReport, compareSetupMatrixMode } from './rux_setup_matrix.js?v=0.75.8-heatmap-panel-live-20260524';
-import { buildRuleComparisonReport } from './rux_rule_compare.js?v=0.75.8-heatmap-panel-live-20260524';
-import { makeMonteCarloStabilityReport } from './rux_monte_carlo.js?v=0.75.8-heatmap-panel-live-20260524';
-import { buildExecutionFidelityReport } from './rux_execution_fidelity.js?v=0.75.8-heatmap-panel-live-20260524';
-import { makeSignalReplayReport } from './rux_signal_replay.js?v=0.75.8-heatmap-panel-live-20260524';
-import { loadSignalJournal, makeForwardJournalReport } from './rux_journal.js?v=0.75.8-heatmap-panel-live-20260524';
-import { loadLastDataSourceHealthReport } from './rux_data_health.js?v=0.75.8-heatmap-panel-live-20260524';
+} from './rux_core.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { buildSetupPerformanceMatrixReport, compareSetupMatrixMode } from './rux_setup_matrix.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { buildRuleComparisonReport } from './rux_rule_compare.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { makeMonteCarloStabilityReport } from './rux_monte_carlo.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { buildExecutionFidelityReport } from './rux_execution_fidelity.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { makeSignalReplayReport } from './rux_signal_replay.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { loadSignalJournal, makeForwardJournalReport } from './rux_journal.js?v=0.75.9-heatmap-premium-rework-20260524';
+import { loadLastDataSourceHealthReport } from './rux_data_health.js?v=0.75.9-heatmap-premium-rework-20260524';
 
 function num(v, fallback = 0) {
   const n = Number(v);
