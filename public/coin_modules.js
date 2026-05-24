@@ -1,6 +1,6 @@
 /* RUx — Coin altı modülleri: performans, ilişkiler, likidasyon, ısı, rapor */
-import { el, fetchMarket, fmtPct, fmtPrice, fmtNum, atr, ema, rsi } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { ICN, statCard, card, pageHead, tag, barbar, heatColorClass, coinPill, sparkline } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { el, fetchMarket, fmtPct, fmtPrice, fmtNum, atr, ema, rsi } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN, statCard, card, pageHead, tag, barbar, heatColorClass, coinPill, sparkline } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 const SYMBOLS = ['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT','ADAUSDT','AVAXUSDT','LINKUSDT','DOGEUSDT','OPUSDT','ARBUSDT','APTUSDT','SUIUSDT','TONUSDT','NEARUSDT','INJUSDT'];
 

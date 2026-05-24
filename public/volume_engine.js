@@ -42,7 +42,7 @@
  *   - Day type yalnızca kapanmış seans için kesin
  */
 
-import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { isClosedCandle, tfToMs } from './pa_engine.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 /* ───────── Yardımcılar ───────── */
 function num(x){ return Number.isFinite(Number(x)) ? Number(x) : NaN; }

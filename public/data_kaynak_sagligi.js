@@ -1,7 +1,7 @@
 /* RUx — Signal Replay page + Storage Telemetry */
-import { el, fmtTime, getRuxSourceLog } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { runDataSourceHealthCheck, loadLastDataSourceHealthReport, clearDataSourceHealthLog, makeDataHealthExport } from './rux_data_health.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { storageStats, loadAudit, isPersistenceAvailable, clearAllStorage } from './rux_storage.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { el, fmtTime, getRuxSourceLog } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { runDataSourceHealthCheck, loadLastDataSourceHealthReport, clearDataSourceHealthLog, makeDataHealthExport } from './rux_data_health.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { storageStats, loadAudit, isPersistenceAvailable, clearAllStorage } from './rux_storage.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 function tone(score) {
   const s = Number(score || 0);
@@ -26,7 +26,7 @@ export async function renderDataKaynakSagligi(host) {
   host.innerHTML = '';
   host.appendChild(el('div', { class:'page-head' },
     el('div', {},
-      el('div', { class:'page-kicker' }, 'RUx v0.75.15-heatmap-chart-fidelity-side-density-20260524 — BINANCE LIVE DATA HEALTH'),
+      el('div', { class:'page-kicker' }, 'RUx v0.75.12-heatmap-premium-visual-pass-20260524 — BINANCE LIVE DATA HEALTH'),
       el('h1', {}, 'Data Source Health / API Reliability'),
       el('p', { class:'muted' }, 'Canlı veri gelmediğinde sistemi durduran, fallback/proxy ayrımını gösteren ve sinyal güvenini veri kalitesine bağlayan kontrol paneli.')
     ),
@@ -173,7 +173,7 @@ async function guardedRun(host, force) {
   try { return await runDataSourceHealthCheck({ force }); }
   catch (err) {
     const payload = {
-      version: 'RUx v0.75.15-heatmap-chart-fidelity-side-density-20260524', checkedAt: new Date().toISOString(), durationMs: 0,
+      version: 'RUx v0.75.12-heatmap-premium-visual-pass-20260524', checkedAt: new Date().toISOString(), durationMs: 0,
       report: { overall: 0, label: 'SİNYALİ BLOKE ET', categories:{}, rows:[] },
       gates: { mode:'DATA HEALTH TEST FAILED', deployment:'REJECT / FIX DATA', signalConfidenceMultiplier:0, criticalFailures:[{name:'Health Runner', error:err?.message||String(err)}], optionalFailures:[], fallbackRows:[], recommendation:'Kaynak testi çalışmadı; yeni sinyal üretme.' },
       sourceLog: []

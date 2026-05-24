@@ -1,14 +1,14 @@
 /* RUx — Price Action / PA (Full Feature Engine entegrasyonu) */
-import { State, fetchMarket, fmtPrice, fmtPct, el } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, sparkline, coinPill, tfPills, checklist, tag, barbar } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { makeCandleChart, addEmaLine, addVolumeHistogram, normalizeCandleInput } from './charts.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { analyzePriceActionRulebook, statusClass } from './rux_core.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { runFeatureEngine, aggregateMultiTf, PA_EVENT_LABEL_TR, PA_SUBTYPE_LABEL_TR } from './pa_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { runStructureEngine, STRUCT_EVENT_LABEL_TR, STRUCT_BIAS_LABEL_TR, STRUCT_SUBTYPE_LABEL_TR } from './structure_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { runOrderFlowEngine, OF_EVENT_LABEL_TR, OF_SUBTYPE_LABEL_TR, OF_STATUS_LABEL_TR } from './order_flow_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { runTemplateEngine, TPL_LABEL_TR, TPL_DESC_TR } from './template_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { runVolumeEngine, VOL_LABEL_TR } from './volume_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { runDeltaEngine, DELTA_EVENT_LABEL_TR, DELTA_SUBTYPE_LABEL_TR, DELTA_SOURCE_LABEL_TR } from './delta_engine.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { State, fetchMarket, fmtPrice, fmtPct, el } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, sparkline, coinPill, tfPills, checklist, tag, barbar } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { makeCandleChart, addEmaLine, addVolumeHistogram, normalizeCandleInput } from './charts.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { analyzePriceActionRulebook, statusClass } from './rux_core.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { runFeatureEngine, aggregateMultiTf, PA_EVENT_LABEL_TR, PA_SUBTYPE_LABEL_TR } from './pa_engine.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { runStructureEngine, STRUCT_EVENT_LABEL_TR, STRUCT_BIAS_LABEL_TR, STRUCT_SUBTYPE_LABEL_TR } from './structure_engine.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { runOrderFlowEngine, OF_EVENT_LABEL_TR, OF_SUBTYPE_LABEL_TR, OF_STATUS_LABEL_TR } from './order_flow_engine.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { runTemplateEngine, TPL_LABEL_TR, TPL_DESC_TR } from './template_engine.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { runVolumeEngine, VOL_LABEL_TR } from './volume_engine.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { runDeltaEngine, DELTA_EVENT_LABEL_TR, DELTA_SUBTYPE_LABEL_TR, DELTA_SOURCE_LABEL_TR } from './delta_engine.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 async function loadPriceActionLiveContext() {
   const symbol = State.symbol || 'BTCUSDT';

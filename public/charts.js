@@ -1,5 +1,5 @@
 /* RUx — Chart helpers (Lightweight Charts) */
-import { fmtPrice, ema } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { fmtPrice, ema } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 const _LWC = () => (window.LightweightCharts || null);
 

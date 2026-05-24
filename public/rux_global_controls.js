@@ -1,6 +1,6 @@
 /* RUx — Global Live Controls: input, timeframe, favorites */
-import { State, fetchMarket, fmtPrice, fmtPct, el, toast, coinShort, coinName } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { ICN } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { State, fetchMarket, fmtPrice, fmtPct, el, toast, coinShort, coinName } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 const STORAGE = Object.freeze({
   symbol: 'rux.global.symbol.v1',

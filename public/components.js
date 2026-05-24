@@ -1,5 +1,5 @@
 /* RUx — UI components */
-import { el, svg, fmtNum, fmtPrice, fmtPct, coinClass, coinShort, coinName } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { el, svg, fmtNum, fmtPrice, fmtPct, coinClass, coinShort, coinName } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 /* ---- ICONS (lightweight inline SVG) ---- */
 export const ICN = {

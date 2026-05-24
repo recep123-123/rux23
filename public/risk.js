@@ -1,8 +1,8 @@
 /* RUx — Risk Paneli (image 10) */
-import { el } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { makeRuxPortfolioHeatSnapshot, statusClass } from './rux_core.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { ICN, statCard, card, pageHead, donut, ringGauge } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { canvasLineChart, correlMatrix } from './charts.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { el } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { makeRuxPortfolioHeatSnapshot, statusClass } from './rux_core.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN, statCard, card, pageHead, donut, ringGauge } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { canvasLineChart, correlMatrix } from './charts.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 export async function renderRisk(host) {
   host.innerHTML = '';

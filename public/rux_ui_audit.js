@@ -1,6 +1,6 @@
 /* RUx — Functional UI Audit & Generic Action Bridge
    Purpose: make passive/demo buttons visible and provide safe generic actions for common controls. */
-import { toast } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { toast } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 const ACTION_WORDS = [
   'YENİLE','YENIDEN','YENİDEN','REFRESH','TEST','ÇALIŞTIR','CALISTIR','VALIDASYON',
@@ -59,7 +59,7 @@ function markButtons(host){
     btn.setAttribute('data-rux-action-state','bridged');
     btn.setAttribute('data-rux-bridge-action', kind);
     btn.classList.add('rux-bridged-action');
-    btn.title = btn.title || `RUx v0.75.15-heatmap-chart-fidelity-side-density-20260524 generic bridge: ${kind}`;
+    btn.title = btn.title || `RUx v0.75.12-heatmap-premium-visual-pass-20260524 generic bridge: ${kind}`;
   }
   return counts;
 }

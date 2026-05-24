@@ -1,6 +1,6 @@
 /* RUx — Bugün İşlem? (image 15) */
-import { State, el, fmtPct } from './api.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
-import { ICN, statCard, card, pageHead, ringGauge, coinPill, checklist, barbar } from './components.js?v=0.75.15-heatmap-chart-fidelity-side-density-20260524';
+import { State, el, fmtPct } from './api.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
+import { ICN, statCard, card, pageHead, ringGauge, coinPill, checklist, barbar } from './components.js?v=0.75.12-heatmap-premium-visual-pass-20260524';
 
 export async function renderBugun(host) {
   host.innerHTML = '';
